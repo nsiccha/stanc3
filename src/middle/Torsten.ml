@@ -36,6 +36,20 @@ let pmx_coupled_ode_func =
         , FnPlain
         , Mem_pattern.AoS ) ) ]
 
+(* DDE RHS: pmx_solve_ode_func plus the lagged states y_lag, whose column j is
+   y(t - tau[j]) *)
+let pmx_solve_dde_func =
+  [ ( UnsizedType.AutoDiffable
+    , UnsizedType.UFun
+        ( [ (UnsizedType.AutoDiffable, UnsizedType.UReal)
+          ; (UnsizedType.AutoDiffable, UnsizedType.UVector)
+          ; (UnsizedType.AutoDiffable, UnsizedType.UMatrix)
+          ; (UnsizedType.AutoDiffable, UArray UReal); (DataOnly, UArray UReal)
+          ; (DataOnly, UArray UInt) ]
+        , ReturnType UnsizedType.UVector
+        , FnPlain
+        , Mem_pattern.AoS ) ) ]
+
 let pmx_integrate_ode_arg =
   [ (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* y0 *)
   ; (UnsizedType.AutoDiffable, UReal) (* t0 *)
@@ -177,11 +191,26 @@ let pmx_solve_coupled_args =
       pmx_solve_args_0 in
   pmx_solve_args_0 @ pmx_solve_args_w_ode_tol @ pmx_solve_args_w_all_tol
 
+(* pmx_solve_dde_rk45: theta is followed by the delays tau and the history
+   y_hist, the state before the first event and after a reset; the optional tail
+   is that of pmx_solve_rk45 *)
+let pmx_solve_dde_args =
+  let tau_y_hist =
+    [ (UnsizedType.AutoDiffable, UnsizedType.UVector) (* tau *)
+    ; (UnsizedType.AutoDiffable, UnsizedType.UVector) (* y_hist *) ] in
+  List.map pmx_solve_args ~f:(function
+    | theta :: tail -> (theta :: tau_y_hist) @ tail
+    | [] ->
+        Common.ICE.internal_compiler_error
+          [%message "Torsten: pmx_solve argument list without theta"])
+
 (* torsten functions *)
 let add_torsten_qualified add_func =
   let sol_names =
     List.map ~f:(fun sol -> "pmx_solve_" ^ sol) ["adams"; "bdf"; "rk45"] in
   List.iter ~f:(fun sol -> pmx_solve add_func sol pmx_solve_args) sol_names;
+  pmx_solve_rhs pmx_solve_dde_func add_func "pmx_solve_dde_rk45"
+    pmx_solve_dde_args;
   let sol_names =
     List.map ~f:(fun sol -> "pmx_solve_group_" ^ sol) ["adams"; "bdf"; "rk45"]
   in
