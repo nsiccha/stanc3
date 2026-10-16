@@ -83,93 +83,45 @@ let rec cart_prod_list l =
       let tail_product = cart_prod_list tl in
       aux ~acc:[] l1 tail_product
 
-let rec pmx_solve_cpt add_func name args_list =
-  let pmx_event_args =
-    [ (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* time *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* amt *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* rate *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* ii *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* evid *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* cmt *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* addl *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) ] in
-  (* ss *)
-  match args_list with
-  | [] -> ()
-  | head :: tail ->
-      add_func
-        ( name
-        , UnsizedType.ReturnType UMatrix
-        , pmx_event_args @ head
-        , Mem_pattern.AoS );
-      pmx_solve_cpt add_func name tail
+let pmx_event_args =
+  [ (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* time *)
+  ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* amt *)
+  ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* rate *)
+  ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* ii *)
+  ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* evid *)
+  ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* cmt *)
+  ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* addl *)
+  ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* ss *) ]
 
-let rec pmx_solve add_func name args_list =
-  let pmx_event_args =
-    [ (UnsizedType.DataOnly, UnsizedType.UInt) (* nCmt *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* time *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* amt *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* rate *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* ii *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* evid *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* cmt *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* addl *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) ] in
-  (* ss *)
-  match args_list with
-  | [] -> ()
-  | head :: tail ->
-      add_func
-        ( name
-        , UnsizedType.ReturnType UMatrix
-        , pmx_solve_ode_func @ pmx_event_args @ head
-        , Mem_pattern.AoS );
-      pmx_solve add_func name tail
+let pmx_ncmt_arg = [(UnsizedType.DataOnly, UnsizedType.UInt)]
 
-let rec pmx_solve_coupled add_func name args_list =
-  let pmx_event_args =
-    [ (UnsizedType.DataOnly, UnsizedType.UInt) (* nCmt *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* time *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* amt *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* rate *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* ii *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* evid *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* cmt *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* addl *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) ] in
-  (* ss *)
-  match args_list with
-  | [] -> ()
-  | head :: tail ->
+(* one matrix-valued overload of [name] per argument list in [args_list], each
+   preceded by [prefix] *)
+let pmx_add_overloads add_func name prefix args_list =
+  List.iter args_list ~f:(fun args ->
       add_func
-        ( name
-        , UnsizedType.ReturnType UMatrix
-        , pmx_coupled_ode_func @ pmx_event_args @ head
-        , Mem_pattern.AoS );
-      pmx_solve_coupled add_func name tail
+        (name, UnsizedType.ReturnType UMatrix, prefix @ args, Mem_pattern.AoS))
 
-let rec pmx_solve_group add_func name args_list =
-  let pmx_event_args =
-    [ (UnsizedType.DataOnly, UnsizedType.UInt) (* nCmt *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UInt) (* length *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* time *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* amt *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* rate *)
-    ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* ii *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* evid *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* cmt *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* addl *)
-    ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) ] in
-  (* ss *)
-  match args_list with
-  | [] -> ()
-  | head :: tail ->
-      add_func
-        ( name
-        , UnsizedType.ReturnType UMatrix
-        , pmx_solve_ode_func @ pmx_event_args @ head
-        , Mem_pattern.AoS );
-      pmx_solve_group add_func name tail
+let pmx_solve_cpt add_func name args_list =
+  pmx_add_overloads add_func name pmx_event_args args_list
+
+(* solvers taking the right-hand side [rhs] and nCmt before the events *)
+let pmx_solve_rhs rhs add_func name args_list =
+  pmx_add_overloads add_func name
+    (rhs @ pmx_ncmt_arg @ pmx_event_args)
+    args_list
+
+let pmx_solve add_func name args_list =
+  pmx_solve_rhs pmx_solve_ode_func add_func name args_list
+
+let pmx_solve_coupled add_func name args_list =
+  pmx_solve_rhs pmx_coupled_ode_func add_func name args_list
+
+let pmx_solve_group add_func name args_list =
+  let length = [(UnsizedType.AutoDiffable, UnsizedType.UArray UInt)] in
+  pmx_add_overloads add_func name
+    (pmx_solve_ode_func @ pmx_ncmt_arg @ length @ pmx_event_args)
+    args_list
 
 let pmx_solve_args, pmx_group_args, pmx_solve_cpt_args =
   let pmx_param_1d, pmx_param_2d =
