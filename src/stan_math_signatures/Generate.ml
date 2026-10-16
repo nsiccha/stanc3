@@ -2610,6 +2610,18 @@ let variadic_dae_mandatory_fun_args =
   ; (UnsizedType.AutoDiffable, UnsizedType.UVector)
   ; (UnsizedType.AutoDiffable, UnsizedType.UVector) ]
 
+(* Variadic DDE (constant delays). The tolerance arguments and return types are
+   those of the non-adjoint ODE solvers. *)
+let variadic_dde_mandatory_arg_types =
+  [ (UnsizedType.AutoDiffable, UnsizedType.UVector) (* y0 *)
+  ; (DataOnly, UReal) (* t0 *); (DataOnly, UArray UReal) (* ts *)
+  ; (AutoDiffable, UVector) (* tau *) ]
+
+let variadic_dde_mandatory_fun_args =
+  [ (UnsizedType.AutoDiffable, UnsizedType.UReal) (* t *)
+  ; (UnsizedType.AutoDiffable, UnsizedType.UVector) (* y *)
+  ; (UnsizedType.AutoDiffable, UnsizedType.UMatrix) (* y_lag *) ]
+
 let variadic_ode_adjoint_fn = "ode_adjoint_tol_ctl"
 
 let variadic_ode_nonadjoint_fns =
@@ -2639,6 +2651,15 @@ let () =
     ~control_args:(variadic_dae_mandatory_arg_types @ variadic_dae_tol_arg_types)
     ~required_fn_args:variadic_dae_mandatory_fun_args
     ~required_fn_rt:variadic_dae_fun_return_type ();
+  (* DDEs *)
+  add_variadic_fn "dde_rk45" ~return_type:variadic_ode_return_type
+    ~control_args:variadic_dde_mandatory_arg_types
+    ~required_fn_args:variadic_dde_mandatory_fun_args
+    ~required_fn_rt:variadic_ode_fun_return_type ();
+  add_variadic_fn "dde_rk45_tol" ~return_type:variadic_ode_return_type
+    ~control_args:(variadic_dde_mandatory_arg_types @ variadic_ode_tol_arg_types)
+    ~required_fn_args:variadic_dde_mandatory_fun_args
+    ~required_fn_rt:variadic_ode_fun_return_type ();
   (* non-adjoint ODES - same for all *)
   let add_ode name =
     add_variadic_fn name ~return_type:variadic_ode_return_type
