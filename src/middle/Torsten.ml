@@ -1,0 +1,297 @@
+open Core
+
+(* old ODE RHS def *)
+let pmx_ode_func =
+  [ ( UnsizedType.AutoDiffable
+    , UnsizedType.UFun
+        ( [ (UnsizedType.AutoDiffable, UnsizedType.UReal)
+          ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal)
+          ; (UnsizedType.AutoDiffable, UArray UReal); (DataOnly, UArray UReal)
+          ; (DataOnly, UArray UInt) ]
+        , ReturnType (UnsizedType.UArray UReal)
+        , FnPlain
+        , Mem_pattern.AoS ) ) ]
+
+(* new ODE RHS def *)
+let pmx_solve_ode_func =
+  [ ( UnsizedType.AutoDiffable
+    , UnsizedType.UFun
+        ( [ (UnsizedType.AutoDiffable, UnsizedType.UReal)
+          ; (UnsizedType.AutoDiffable, UnsizedType.UVector)
+          ; (UnsizedType.AutoDiffable, UArray UReal); (DataOnly, UArray UReal)
+          ; (DataOnly, UArray UInt) ]
+        , ReturnType UnsizedType.UVector
+        , FnPlain
+        , Mem_pattern.AoS ) ) ]
+
+let pmx_coupled_ode_func =
+  [ ( UnsizedType.AutoDiffable
+    , UnsizedType.UFun
+        ( [ (UnsizedType.AutoDiffable, UnsizedType.UReal)
+          ; (UnsizedType.AutoDiffable, UnsizedType.UVector)
+          ; (UnsizedType.AutoDiffable, UnsizedType.UVector)
+          ; (UnsizedType.AutoDiffable, UArray UReal); (DataOnly, UArray UReal)
+          ; (DataOnly, UArray UInt) ]
+        , ReturnType UnsizedType.UVector
+        , FnPlain
+        , Mem_pattern.AoS ) ) ]
+
+(* DDE RHS: pmx_solve_ode_func plus the lagged states y_lag, whose column j is
+   y(t - tau[j]) *)
+let pmx_solve_dde_func =
+  [ ( UnsizedType.AutoDiffable
+    , UnsizedType.UFun
+        ( [ (UnsizedType.AutoDiffable, UnsizedType.UReal)
+          ; (UnsizedType.AutoDiffable, UnsizedType.UVector)
+          ; (UnsizedType.AutoDiffable, UnsizedType.UMatrix)
+          ; (UnsizedType.AutoDiffable, UArray UReal); (DataOnly, UArray UReal)
+          ; (DataOnly, UArray UInt) ]
+        , ReturnType UnsizedType.UVector
+        , FnPlain
+        , Mem_pattern.AoS ) ) ]
+
+let pmx_integrate_ode_arg =
+  [ (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* y0 *)
+  ; (UnsizedType.AutoDiffable, UReal) (* t0 *)
+  ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* ts *)
+  ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* theta *)
+  ; (DataOnly, UnsizedType.UArray UReal) (* x_r *)
+  ; (DataOnly, UnsizedType.UArray UInt) ]
+(* x_i *)
+
+let pmx_integrate_ode_tol =
+  [ (UnsizedType.DataOnly, UnsizedType.UReal) (* rtol *)
+  ; (UnsizedType.DataOnly, UnsizedType.UReal) (* atol *)
+  ; (UnsizedType.DataOnly, UnsizedType.UReal) ]
+(* mxstep *)
+
+let pmx_algebra_sol_tol = pmx_integrate_ode_tol
+
+let rec pmx_ode_group add_func name args_list =
+  match args_list with
+  | [] -> ()
+  | head :: tail ->
+      add_func
+        ( name
+        , UnsizedType.ReturnType UMatrix
+        , pmx_ode_func @ head
+        , Mem_pattern.AoS );
+      pmx_ode_group add_func name tail
+
+(* from rosettacode.org *)
+let rec cart_prod_list l =
+  (* We need to do the cross product of our current list and all the others
+   * so we define a helper function for that *)
+  let rec aux ~acc l1 l2 =
+    match (l1, l2) with
+    | [], _ | _, [] -> acc
+    | h1 :: t1, h2 :: t2 ->
+        let acc = (h1 :: h2) :: acc in
+        let acc = aux ~acc t1 l2 in
+        aux ~acc [h1] t2
+    (* now we can do the actual computation *) in
+  match l with
+  | [] -> []
+  | [l1] -> List.map ~f:(fun x -> [x]) l1
+  | l1 :: tl ->
+      let tail_product = cart_prod_list tl in
+      aux ~acc:[] l1 tail_product
+
+let pmx_event_args =
+  [ (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* time *)
+  ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* amt *)
+  ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* rate *)
+  ; (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) (* ii *)
+  ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* evid *)
+  ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* cmt *)
+  ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* addl *)
+  ; (UnsizedType.DataOnly, UnsizedType.UArray UInt) (* ss *) ]
+
+let pmx_ncmt_arg = [(UnsizedType.DataOnly, UnsizedType.UInt)]
+
+(* one matrix-valued overload of [name] per argument list in [args_list], each
+   preceded by [prefix] *)
+let pmx_add_overloads add_func name prefix args_list =
+  List.iter args_list ~f:(fun args ->
+      add_func
+        (name, UnsizedType.ReturnType UMatrix, prefix @ args, Mem_pattern.AoS))
+
+let pmx_solve_cpt add_func name args_list =
+  pmx_add_overloads add_func name pmx_event_args args_list
+
+(* solvers taking the right-hand side [rhs] and nCmt before the events *)
+let pmx_solve_rhs rhs add_func name args_list =
+  pmx_add_overloads add_func name
+    (rhs @ pmx_ncmt_arg @ pmx_event_args)
+    args_list
+
+let pmx_solve add_func name args_list =
+  pmx_solve_rhs pmx_solve_ode_func add_func name args_list
+
+let pmx_solve_coupled add_func name args_list =
+  pmx_solve_rhs pmx_coupled_ode_func add_func name args_list
+
+let pmx_solve_group add_func name args_list =
+  let length = [(UnsizedType.AutoDiffable, UnsizedType.UArray UInt)] in
+  pmx_add_overloads add_func name
+    (pmx_solve_ode_func @ pmx_ncmt_arg @ length @ pmx_event_args)
+    args_list
+
+let pmx_solve_args, pmx_group_args, pmx_solve_cpt_args =
+  let pmx_param_1d, pmx_param_2d =
+    ( [(UnsizedType.AutoDiffable, UnsizedType.UArray UReal)]
+    , [(UnsizedType.AutoDiffable, UnsizedType.UArray (UArray UReal))] ) in
+  let pmx_r_data, pmx_i_data =
+    ( [(UnsizedType.DataOnly, UnsizedType.UArray (UArray UReal))]
+    , [(UnsizedType.DataOnly, UnsizedType.UArray (UArray UInt))] ) in
+  let pmx_param = pmx_param_1d @ pmx_param_2d in
+  let pmx_solve_args_0 =
+    cart_prod_list [pmx_param; pmx_param; pmx_param; pmx_r_data; pmx_i_data]
+    @ cart_prod_list [pmx_param; pmx_param; pmx_param; pmx_r_data]
+    @ cart_prod_list [pmx_param; pmx_param; pmx_param]
+    @ cart_prod_list [pmx_param; pmx_param]
+    @ cart_prod_list [pmx_param] in
+  let pmx_group_args_0 =
+    cart_prod_list
+      [pmx_param_2d; pmx_param_2d; pmx_param_2d; pmx_r_data; pmx_i_data]
+    @ cart_prod_list [pmx_param_2d; pmx_param_2d; pmx_param_2d; pmx_r_data]
+    @ cart_prod_list [pmx_param_2d; pmx_param_2d; pmx_param_2d]
+    @ cart_prod_list [pmx_param_2d; pmx_param_2d]
+    @ cart_prod_list [pmx_param_2d] in
+  let pmx_solve_args_w_ode_tol =
+    List.map ~f:(fun l -> l @ pmx_integrate_ode_tol) pmx_solve_args_0 in
+  let pmx_solve_args_w_all_tol =
+    List.map
+      ~f:(fun l -> l @ pmx_integrate_ode_tol @ pmx_algebra_sol_tol)
+      pmx_solve_args_0 in
+  let pmx_group_args_w_ode_tol =
+    List.map ~f:(fun l -> l @ pmx_integrate_ode_tol) pmx_group_args_0 in
+  let pmx_group_args_w_all_tol =
+    List.map
+      ~f:(fun l -> l @ pmx_integrate_ode_tol @ pmx_algebra_sol_tol)
+      pmx_group_args_0 in
+  ( pmx_solve_args_0 @ pmx_solve_args_w_ode_tol @ pmx_solve_args_w_all_tol
+  , pmx_group_args_0 @ pmx_group_args_w_ode_tol @ pmx_group_args_w_all_tol
+  , cart_prod_list [pmx_param; pmx_param; pmx_param]
+    @ cart_prod_list [pmx_param; pmx_param]
+    @ cart_prod_list [pmx_param] )
+
+let pmx_solve_coupled_args =
+  let pmx_param_1d = (UnsizedType.AutoDiffable, UnsizedType.UArray UReal) in
+  let pmx_param_2d =
+    (UnsizedType.AutoDiffable, UnsizedType.UArray (UArray UReal)) in
+  let pmx_solve_args_0 =
+    [ [pmx_param_1d; pmx_param_1d; pmx_param_1d]
+    ; [pmx_param_2d; pmx_param_2d; pmx_param_2d] ] in
+  let pmx_solve_args_w_ode_tol =
+    List.map ~f:(fun l -> l @ pmx_integrate_ode_tol) pmx_solve_args_0 in
+  let pmx_solve_args_w_all_tol =
+    List.map
+      ~f:(fun l -> l @ pmx_integrate_ode_tol @ pmx_algebra_sol_tol)
+      pmx_solve_args_0 in
+  pmx_solve_args_0 @ pmx_solve_args_w_ode_tol @ pmx_solve_args_w_all_tol
+
+(* pmx_solve_dde_rk45: theta is followed by the delays tau and the history
+   y_hist, the state before the first event and after a reset; the optional tail
+   is that of pmx_solve_rk45 *)
+let pmx_solve_dde_args =
+  let tau_y_hist =
+    [ (UnsizedType.AutoDiffable, UnsizedType.UVector) (* tau *)
+    ; (UnsizedType.AutoDiffable, UnsizedType.UVector) (* y_hist *) ] in
+  List.map pmx_solve_args ~f:(function
+    | theta :: tail -> (theta :: tau_y_hist) @ tail
+    | [] ->
+        Common.ICE.internal_compiler_error
+          [%message "Torsten: pmx_solve argument list without theta"])
+
+(* torsten functions *)
+let add_torsten_qualified add_func =
+  let sol_names =
+    List.map ~f:(fun sol -> "pmx_solve_" ^ sol) ["adams"; "bdf"; "rk45"] in
+  List.iter ~f:(fun sol -> pmx_solve add_func sol pmx_solve_args) sol_names;
+  pmx_solve_rhs pmx_solve_dde_func add_func "pmx_solve_dde_rk45"
+    pmx_solve_dde_args;
+  let sol_names =
+    List.map ~f:(fun sol -> "pmx_solve_group_" ^ sol) ["adams"; "bdf"; "rk45"]
+  in
+  List.iter
+    ~f:(fun sol -> pmx_solve_group add_func sol pmx_group_args)
+    sol_names;
+  let sol_names =
+    List.map
+      ~f:(fun sol -> "pmx_solve_" ^ sol)
+      ["onecpt"; "twocpt"; "onecpt_effcpt"; "twocpt_effcpt"] in
+  List.iter
+    ~f:(fun sol -> pmx_solve_cpt add_func sol pmx_solve_cpt_args)
+    sol_names;
+  let sol_names =
+    List.map ~f:(fun sol -> "pmx_solve_onecpt_" ^ sol) ["bdf"; "rk45"] in
+  List.iter
+    ~f:(fun sol -> pmx_solve_coupled add_func sol pmx_solve_coupled_args)
+    sol_names;
+  let sol_names =
+    List.map ~f:(fun sol -> "pmx_solve_twocpt_" ^ sol) ["bdf"; "rk45"] in
+  List.iter
+    ~f:(fun sol -> pmx_solve_coupled add_func sol pmx_solve_coupled_args)
+    sol_names;
+  (* pmx_solve_linode *)
+  add_func
+    ( "pmx_solve_linode"
+    , ReturnType UMatrix
+    , [ (AutoDiffable, UArray UReal) (* time *)
+      ; (AutoDiffable, UArray UReal) (* amt *)
+      ; (AutoDiffable, UArray UReal) (* rate *)
+      ; (AutoDiffable, UArray UReal) (* ii *)
+      ; (DataOnly, UArray UInt) (* evid *); (DataOnly, UArray UInt) (* cmt *)
+      ; (DataOnly, UArray UInt) (* addl *); (DataOnly, UArray UInt) (* ss *)
+      ; (AutoDiffable, UArray UMatrix) (* pMatrix *)
+      ; (AutoDiffable, UArray (UArray UReal)) (* biovar *)
+      ; (AutoDiffable, UArray (UArray UReal)) ]
+    , Mem_pattern.AoS );
+  (* tlag *)
+  add_func
+    ( "pmx_solve_linode"
+    , ReturnType UMatrix
+    , [ (AutoDiffable, UArray UReal) (* time *)
+      ; (AutoDiffable, UArray UReal) (* amt *)
+      ; (AutoDiffable, UArray UReal) (* rate *)
+      ; (AutoDiffable, UArray UReal) (* ii *)
+      ; (DataOnly, UArray UInt) (* evid *); (DataOnly, UArray UInt) (* cmt *)
+      ; (DataOnly, UArray UInt) (* addl *); (DataOnly, UArray UInt) (* ss *)
+      ; (AutoDiffable, UMatrix) (* pMatrix *)
+      ; (AutoDiffable, UArray UReal) (* biovar *); (AutoDiffable, UArray UReal)
+      ]
+    , Mem_pattern.AoS );
+  (* tlag *)
+  add_func
+    ( "pmx_solve_linode"
+    , ReturnType UMatrix
+    , [ (AutoDiffable, UArray UReal) (* time *)
+      ; (AutoDiffable, UArray UReal) (* amt *)
+      ; (AutoDiffable, UArray UReal) (* rate *)
+      ; (AutoDiffable, UArray UReal) (* ii *)
+      ; (DataOnly, UArray UInt) (* evid *); (DataOnly, UArray UInt) (* cmt *)
+      ; (DataOnly, UArray UInt) (* addl *); (DataOnly, UArray UInt) (* ss *)
+      ; (AutoDiffable, UArray UMatrix) (* pMatrix *)
+      ; (AutoDiffable, UArray UReal) (* biovar *); (AutoDiffable, UArray UReal)
+      ]
+    , Mem_pattern.AoS );
+  (* tlag *)
+
+  (* linear interpolation *)
+  add_func
+    ( "pmx_ln_interpolate"
+    , ReturnType UReal
+    , [ (AutoDiffable, UReal) (* x_out *); (AutoDiffable, UArray UReal) (* x *)
+      ; (AutoDiffable, UArray UReal) ]
+    , Mem_pattern.AoS );
+  (* y *)
+  add_func
+    ( "pmx_ln_interpolate"
+    , ReturnType (UArray UReal)
+    , [ (AutoDiffable, UArray UReal) (* x_out *)
+      ; (AutoDiffable, UArray UReal) (* x *); (AutoDiffable, UArray UReal) ]
+    , Mem_pattern.AoS )
+(* y *)
+
+(* end of torsten signatures *)

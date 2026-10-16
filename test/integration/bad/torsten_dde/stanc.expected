@@ -1,0 +1,342 @@
+  $ ../../../../../install/default/bin/stanc bad_lag_not_matrix.stan
+Semantic error in 'bad_lag_not_matrix.stan', line 25, column 20 to line 26, column 69:
+   -------------------------------------------------
+    23:  }
+    24:  transformed parameters {
+    25:    matrix[1, nt] x = pmx_solve_dde_rk45(rhs, 1, time, amt, rate, ii, evid, cmt,
+                             ^
+    26:                                          addl, ss, theta, tau, y_hist);
+    27:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_dde_rk45":
+(<F1>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real, vector,
+ vector)
+where F1 = (real, vector, vector, array[] real, data array[] real,
+            data array[] int) => vector
+Available signatures:
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector) => matrix
+where F2 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => vector
+  The first argument must be
+   (real, vector, matrix, array[] real, data array[] real, data array[] int) => vector
+  but got
+   (real, vector, vector, array[] real, data array[] real, data array[] int) => vector
+  These are not compatible because:
+    The types for the third argument are incompatible: one is
+     vector
+    but the other is
+     matrix
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector) => matrix
+  The first argument must be
+   (real, vector, matrix, array[] real, data array[] real, data array[] int) => vector
+  but got
+   (real, vector, vector, array[] real, data array[] real, data array[] int) => vector
+  These are not compatible because:
+    The types for the third argument are incompatible: one is
+     vector
+    but the other is
+     matrix
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[] real, data real, data real, data real,
+ data real, data real, data real) => matrix
+  Expected 20 arguments but found 13 arguments.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_missing_y_hist.stan
+Semantic error in 'bad_missing_y_hist.stan', line 25, column 20 to line 26, column 61:
+   -------------------------------------------------
+    23:  }
+    24:  transformed parameters {
+    25:    matrix[1, nt] x = pmx_solve_dde_rk45(rhs, 1, time, amt, rate, ii, evid, cmt,
+                             ^
+    26:                                          addl, ss, theta, tau);
+    27:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_dde_rk45":
+(<F1>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real, vector)
+where F1 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => vector
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 12 arguments.
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 12 arguments.
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[] real, data real, data real, data real,
+ data real, data real, data real) => matrix
+  Expected 20 arguments but found 12 arguments.
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector, array[] real, data real, data real,
+ data real, data real, data real, data real) => matrix
+  Expected 20 arguments but found 12 arguments.
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector, array[,] real, data real, data real,
+ data real, data real, data real, data real) => matrix
+  Expected 20 arguments but found 12 arguments.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_rhs_return_type.stan
+Semantic error in 'bad_rhs_return_type.stan', line 25, column 20 to line 26, column 69:
+   -------------------------------------------------
+    23:  }
+    24:  transformed parameters {
+    25:    matrix[1, nt] x = pmx_solve_dde_rk45(rhs, 1, time, amt, rate, ii, evid, cmt,
+                             ^
+    26:                                          addl, ss, theta, tau, y_hist);
+    27:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_dde_rk45":
+(<F1>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real, vector,
+ vector)
+where F1 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => array[] real
+Available signatures:
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector) => matrix
+where F2 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => vector
+  The first argument must be
+   (real, vector, matrix, array[] real, data array[] real, data array[] int) => vector
+  but got
+   (real, vector, matrix, array[] real, data array[] real, data array[] int) => array[] real
+  The return types are not compatible.
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector) => matrix
+  The first argument must be
+   (real, vector, matrix, array[] real, data array[] real, data array[] int) => vector
+  but got
+   (real, vector, matrix, array[] real, data array[] real, data array[] int) => array[] real
+  The return types are not compatible.
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[] real, data real, data real, data real,
+ data real, data real, data real) => matrix
+  Expected 20 arguments but found 13 arguments.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_tau_type.stan
+Semantic error in 'bad_tau_type.stan', line 26, column 20 to line 27, column 73:
+   -------------------------------------------------
+    24:  }
+    25:  transformed parameters {
+    26:    matrix[1, nt] x = pmx_solve_dde_rk45(rhs, 1, time, amt, rate, ii, evid, cmt,
+                             ^
+    27:                                          addl, ss, theta, tau_arr, y_hist);
+    28:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_dde_rk45":
+(<F1>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real,
+ array[] real, vector)
+where F1 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => vector
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector) => matrix
+  The 12th argument must be vector but got array[] real
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector) => matrix
+  The 11th argument must be array[,] real but got array[] real
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[] real, data real, data real, data real,
+ data real, data real, data real) => matrix
+  Expected 20 arguments but found 13 arguments.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_variadic_rhs.stan
+Semantic error in 'bad_variadic_rhs.stan', line 24, column 20 to line 25, column 72:
+   -------------------------------------------------
+    22:  }
+    23:  transformed parameters {
+    24:    matrix[1, nt] x = pmx_solve_dde_rk45(rhs, 1, time, amt, rate, ii, evid, cmt,
+                             ^
+    25:                                          addl, ss, tau, y_hist, theta[1]);
+    26:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_dde_rk45":
+(<F1>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, vector, vector, real)
+where F1 = (real, vector, matrix, real) => vector
+Available signatures:
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector) => matrix
+where F2 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => vector
+  The first argument must be
+   (real, vector, matrix, array[] real, data array[] real, data array[] int) => vector
+  but got
+   (real, vector, matrix, real) => vector
+  These are not compatible because:
+    One takes 4 arguments but the other takes 6 arguments.
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector) => matrix
+  The first argument must be
+   (real, vector, matrix, array[] real, data array[] real, data array[] int) => vector
+  but got
+   (real, vector, matrix, real) => vector
+  These are not compatible because:
+    One takes 4 arguments but the other takes 6 arguments.
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F2>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[] real, data real, data real, data real,
+ data real, data real, data real) => matrix
+  Expected 20 arguments but found 13 arguments.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_x_r_param.stan
+Semantic error in 'bad_x_r_param.stan', line 26, column 20 to line 27, column 88:
+   -------------------------------------------------
+    24:  }
+    25:  transformed parameters {
+    26:    matrix[1, nt] x = pmx_solve_dde_rk45(rhs, 1, time, amt, rate, ii, evid, cmt,
+                             ^
+    27:                                          addl, ss, theta, tau, y_hist, theta, theta, x_r);
+    28:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_dde_rk45":
+(<F1>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real, vector,
+ vector, array[] real, array[] real, array[,] real)
+where F1 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => vector
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[] real, array[] real, data array[,] real) => matrix
+  The 16th argument must be data-only. (Local variables are assumed to depend
+  on parameters; same goes for function inputs unless they are marked with
+  the keyword "data".)
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[] real, array[,] real,
+ data array[,] real) => matrix
+  The 15th argument must be array[,] real but got array[] real
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, data real, data real, data real) => matrix
+  The 14th argument must be real but got array[] real
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[,] real, array[] real,
+ data array[,] real) => matrix
+  The 14th argument must be array[,] real but got array[] real
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[,] real, array[,] real,
+ data array[,] real) => matrix
+  The 14th argument must be array[,] real but got array[] real
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_y_hist_type.stan
+Semantic error in 'bad_y_hist_type.stan', line 26, column 20 to line 27, column 73:
+   -------------------------------------------------
+    24:  }
+    25:  transformed parameters {
+    26:    matrix[1, nt] x = pmx_solve_dde_rk45(rhs, 1, time, amt, rate, ii, evid, cmt,
+                             ^
+    27:                                          addl, ss, theta, tau, y_hist_arr);
+    28:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_dde_rk45":
+(<F1>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real, vector,
+ array[] real)
+where F1 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => vector
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector) => matrix
+  The 13th argument must be vector but got array[] real
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector) => matrix
+  The 11th argument must be array[,] real but got array[] real
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[] real, data real, data real, data real,
+ data real, data real, data real) => matrix
+  Expected 20 arguments but found 13 arguments.
+(Additional signatures omitted)
+[exit 1]
