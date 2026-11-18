@@ -70,9 +70,9 @@ type variadic = FixedArgs | ReduceSum | VariadicHOF of int
 
 let functor_type hof =
   match Stan_math_signatures.lookup_stan_math_variadic_function hof with
-  | Some {required_fn_args; _} -> VariadicHOF (List.length required_fn_args)
-  | None when Stan_math_signatures.is_reduce_sum_fn hof -> ReduceSum
-  | None -> FixedArgs
+  | {required_fn_args; _} :: _ -> VariadicHOF (List.length required_fn_args)
+  | [] when Stan_math_signatures.is_reduce_sum_fn hof -> ReduceSum
+  | [] -> FixedArgs
 
 let functor_suffix_select = function
   | VariadicHOF n -> variadic_functor_suffix n
@@ -387,11 +387,17 @@ and lower_functionals fname suffix es mem_pattern =
             , grainsize :: container :: msgs :: tl )
         | _, _
           when Stan_math_signatures.is_stan_math_variadic_function_name fname ->
+            (* [f], or [f] and its Jacobian [jac], then the control arguments,
+               the message stream and the variadic arguments *)
+            let function_args =
+              List.take_while es ~f:contains_hof_vars |> List.length in
             let UnsizedType.{control_args; _} =
-              Stan_math_signatures.lookup_stan_math_variadic_function fname
+              Stan_math_signatures.find_stan_math_variadic_function fname
+                ~function_args
               |> Option.value_exn in
             let hd, tl =
-              List.split_n converted_es (List.length control_args + 1) in
+              List.split_n converted_es
+                (function_args + List.length control_args) in
             (fname, hd @ (msgs :: tl))
         | ( "map_rect"
           , {pattern= Lit (Int, id); _}

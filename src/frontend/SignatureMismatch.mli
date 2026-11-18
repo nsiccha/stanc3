@@ -64,6 +64,7 @@ val matching_stanlib_function :
 
 val check_variadic_args :
      allow_lpdf:bool
+  -> ?jacobian_rt:UnsizedType.t
   -> UnsizedType.argumentlist
   -> UnsizedType.argumentlist
   -> Location_span.t option
@@ -74,7 +75,11 @@ val check_variadic_args :
      result
 (** Check variadic function arguments. If a match is found, returns [Ok] of the
     function type and a list of promotions (see [promote]) If none is found,
-    returns [Error] of the list of args and a function_mismatch. *)
+    returns [Error] of the list of args and a function_mismatch.
+
+    With [jacobian_rt], the function argument is followed by its Jacobian, which
+    must take exactly the first function's arguments and return [jacobian_rt].
+*)
 
 val data_only_msg : unit Fmt.t
 

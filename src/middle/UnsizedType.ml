@@ -25,11 +25,19 @@ and returntype = Void | ReturnType of t
 and signature = argumentlist * returntype * bool Fun_kind.suffix * Mem_pattern.t
 [@@deriving compare, hash, sexp, equal]
 
+(** A built-in variadic function [name(f, control_args..., ...)], where [f]
+    takes [required_fn_args] followed by the trailing arguments of the call and
+    returns [required_fn_rt].
+
+    With [jacobian_fn_rt = Some rt], [f] is followed by a second function
+    argument [jac], its Jacobian: [name(f, jac, control_args..., ...)]. [jac]
+    takes exactly [f]'s arguments and returns [rt]. *)
 type variadic_signature =
   { return_type: t
   ; control_args: argumentlist
   ; required_fn_rt: t
-  ; required_fn_args: argumentlist }
+  ; required_fn_args: argumentlist
+  ; jacobian_fn_rt: t option }
 
 let rec pp_tuple_autodifftype ppf = function
   | DataOnly -> Fmt.string ppf "data"
