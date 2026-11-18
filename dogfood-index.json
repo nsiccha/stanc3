@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "line": {
+    "repo": "nsiccha/stanc3",
+    "ref": "dogfood",
+    "sha": "cb8f48aca7ea216a4b9ec0bfc776ce0b750a04a6"
+  },
+  "upstream": {
+    "repo": "stan-dev/stanc3",
+    "ref": "v2.39.0",
+    "sha": "739471362446086911f1d6472c19ae0749c366ea"
+  },
+  "prepared_at": "2026-11-18T11:52:22Z",
+  "problems": [
+    {
+      "id": "variadic-dde-signatures",
+      "role": "shared",
+      "title": "Compile Stan calls to the RK45 delay differential equation solver",
+      "summary": "Compiler feature for the Stan Math solver. A Stan model can pass a derivative function that reads lagged states to dde_rk45 or dde_rk45_tol. The compiler checks argument types and emits the corresponding stan::math call.",
+      "repairs": [],
+      "upstream_refs": [],
+      "depends_on": [],
+      "fix": {
+        "branch": "dde-solver",
+        "commits": [
+          {
+            "sha": "287b5ec003c6c9de477dbd12b6aaf94b835aaf03",
+            "title": "Add variadic dde_rk45 and dde_rk45_tol signatures",
+            "original": [
+              "287b5ec003c6c9de477dbd12b6aaf94b835aaf03"
+            ]
+          }
+        ],
+        "why_together": "One commit adds both signatures and their type-checking and C++ generation tests to stanc3 v2.39.0."
+      },
+      "requires": [
+        {
+          "name": "Stan Math DDE solver",
+          "repo": "nsiccha/math",
+          "sha": "20a7984a6a97c1a9013c40eb8cdc548867ace954",
+          "why": "The generated C++ calls the variadic dde_rk45 or dde_rk45_tol implementation in Stan Math."
+        }
+      ],
+      "validation": [
+        {
+          "base": "739471362446086911f1d6472c19ae0749c366ea",
+          "result": "passed",
+          "native_build": "stanc3 v2.39.0-5-g40f93f3 (Unix)",
+          "tests": [
+            "test/integration/bad/variadic_dde",
+            "test/integration/good/code-gen/dde",
+            "test/integration/good/dde_good.stan"
+          ],
+          "detail": "The compiler built from 40f93f345a16f7c7c46c24a9c3ab103224853583 has the same Git source tree as dogfood. It matched the 13 error diagnostics and exit codes and the generated C++ snapshot, and translated the valid model. Release name and version were substituted in the snapshot. These checks exercise the compiler only."
+        }
+      ]
+    },
+    {
+      "id": "torsten-dde-signatures",
+      "role": "shared",
+      "title": "Compile Torsten event-schedule calls to pmx_solve_dde_rk45",
+      "summary": "Compiler feature for the Torsten event solver. The pmx_solve_dde_rk45 function accepts a dosing schedule, delays and state history. stanc3 checks the selected overload and emits a torsten::pmx_solve_dde_rk45 call.",
+      "repairs": [],
+      "upstream_refs": [],
+      "depends_on": [],
+      "fix": {
+        "branch": "torsten-dde",
+        "commits": [
+          {
+            "sha": "c535dd3ebfbfdff00b81e19fdb5fcb45fa263c8b",
+            "title": "Import Torsten's stanc3 delta from metrumresearchgroup/stanc3",
+            "original": [
+              "c535dd3ebfbfdff00b81e19fdb5fcb45fa263c8b"
+            ]
+          },
+          {
+            "sha": "efe6350fc35e048297994717f39ed1b2006b97ad",
+            "title": "Collapse Torsten's pmx_solve overload generators into one helper",
+            "original": [
+              "efe6350fc35e048297994717f39ed1b2006b97ad"
+            ]
+          },
+          {
+            "sha": "40f93f345a16f7c7c46c24a9c3ab103224853583",
+            "title": "Add pmx_solve_dde_rk45 signatures",
+            "original": [
+              "40f93f345a16f7c7c46c24a9c3ab103224853583"
+            ]
+          }
+        ],
+        "why_together": "The first commit imports Torsten’s function signatures and C++ namespace handling from metrumresearchgroup/stanc3. The second factors out their overload generator. The third uses that helper to register and test the DDE solver. These three original patches also apply to v2.39.0 without the separate variadic Stan DDE signatures."
+      },
+      "requires": [
+        {
+          "name": "Stan Math with Torsten headers",
+          "repo": "nsiccha/math",
+          "sha": "085aaf9585167c60f331a44771e6fe465ab39d50",
+          "why": "This integrated math tree supplies the Torsten header and supporting code used by the generated C++."
+        },
+        {
+          "name": "Torsten Math event-schedule solver source",
+          "repo": "nsiccha/torsten_math",
+          "sha": "1bc623ff036f896bf59867fefbc6e59733df29e4",
+          "why": "This is the standalone source for the Torsten solver. Its pmx_solve_dde_rk45.hpp is identical to the copy in the integrated math tree."
+        }
+      ],
+      "validation": [
+        {
+          "base": "739471362446086911f1d6472c19ae0749c366ea",
+          "result": "passed",
+          "native_build": "stanc3 v2.39.0-5-g40f93f3 (Unix)",
+          "tests": [
+            "test/integration/bad/torsten_dde",
+            "test/integration/good/code-gen/torsten_dde",
+            "test/integration/good/torsten",
+            "test/integration/signatures/stan_math_signatures.t"
+          ],
+          "detail": "The compiler built from 40f93f345a16f7c7c46c24a9c3ab103224853583 has the same Git source tree as dogfood. It matched seven error diagnostics and exit codes, the generated C++ snapshot and 90 DDE overloads, and translated all 14 valid Torsten models. Release name and version were substituted in the snapshot. These checks exercise the compiler only."
+        }
+      ]
+    }
+  ]
+}
