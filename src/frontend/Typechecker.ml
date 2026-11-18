@@ -202,10 +202,10 @@ let match_to_rt_option = function
 
 let stan_math_return_type name arg_tys =
   match Stan_math_signatures.lookup_stan_math_variadic_function name with
-  | Some {return_type; _} -> Some (UnsizedType.ReturnType return_type)
-  | None when Stan_math_signatures.is_reduce_sum_fn name ->
+  | {return_type; _} :: _ -> Some (UnsizedType.ReturnType return_type)
+  | [] when Stan_math_signatures.is_reduce_sum_fn name ->
       Some (UnsizedType.ReturnType UReal)
-  | None ->
+  | [] ->
       SignatureMismatch.matching_stanlib_function name arg_tys
       |> match_to_rt_option
 
@@ -932,43 +932,84 @@ and check_laplace_fn ~is_cond_dist loc cf tenv id tes =
   | _ -> generic_failure ()
 
 and check_variadic ~is_cond_dist loc cf tenv id tes =
-  let UnsizedType.{control_args; required_fn_args; required_fn_rt; return_type}
-      =
-    Stan_math_signatures.lookup_stan_math_variadic_function id.name
-    |> Option.value_exn in
-  let matching remaining_es (Env.{type_= ftype; _} as info) =
-    let arg_types =
-      (calculate_autodifftype cf Functions ftype, ftype)
-      :: get_arg_types remaining_es in
-    SignatureMismatch.check_variadic_args ~allow_lpdf:false control_args
-      required_fn_args (Env.location info) required_fn_rt arg_types in
-  match tes with
-  | {expr= Variable fname; _} :: remaining_es -> (
-      match find_matching_first_order_fn tenv (matching remaining_es) fname with
-      | SignatureMismatch.UniqueMatch ((ftype, _), promotions) ->
-          let tes = make_function_variable cf loc fname ftype :: remaining_es in
-          mk_fun_app ~is_cond_dist ~loc (StanLib FnPlain) id
-            (Promotion.promote_list tes promotions)
-            ~type_:return_type
-      | AmbiguousMatch ps ->
-          Semantic_error.ambiguous_function_promotion loc fname.name None ps
-          |> error
-      | SignatureErrors (expected_args, err, prev) ->
-          let loc = specialize_loc ~loc err tes in
-          Semantic_error.illtyped_variadic loc id.name
-            (List.map ~f:type_of_expr_typed tes)
-            expected_args required_fn_rt err prev
-          |> error)
-  | _ ->
-      let expected_args, err, prev =
-        SignatureMismatch.check_variadic_args ~allow_lpdf:false control_args
-          required_fn_args None required_fn_rt (get_arg_types tes)
-        |> Result.error |> Option.value_exn in
-      let loc = specialize_loc ~loc err tes in
-      Semantic_error.illtyped_variadic loc id.name
-        (List.map ~f:type_of_expr_typed tes)
-        expected_args required_fn_rt err prev
-      |> error
+  (* The solvers are overloaded on a second function argument, the Jacobian
+     [jac] of [f]. In the overload without it, the second argument is never a
+     function. *)
+  let function_args =
+    match tes with
+    | _ :: {emeta= {type_; _}; _} :: _ when UnsizedType.is_fun_type type_ -> 2
+    | _ -> 1 in
+  let UnsizedType.
+        { control_args
+        ; required_fn_args
+        ; required_fn_rt
+        ; return_type
+        ; jacobian_fn_rt } =
+    match
+      Stan_math_signatures.find_stan_math_variadic_function id.name
+        ~function_args
+    with
+    | Some signature -> signature
+    | None ->
+        Stan_math_signatures.lookup_stan_math_variadic_function id.name
+        |> List.hd_exn in
+  let check_args location arg_types =
+    SignatureMismatch.check_variadic_args ~allow_lpdf:false
+      ?jacobian_rt:jacobian_fn_rt control_args required_fn_args location
+      required_fn_rt arg_types in
+  let illtyped (expected_args, err, prev) =
+    let loc = specialize_loc ~loc err tes in
+    Semantic_error.illtyped_variadic loc id.name
+      (List.map ~f:type_of_expr_typed tes)
+      expected_args required_fn_rt err prev
+    |> error in
+  let fn_names, remaining_es =
+    match (jacobian_fn_rt, tes) with
+    | None, {expr= Variable fname; _} :: remaining_es -> ([fname], remaining_es)
+    | Some _, {expr= Variable fname; _} :: {expr= Variable jname; _} :: rest ->
+        ([fname; jname], rest)
+    | _ -> ([], tes) in
+  if List.is_empty fn_names then
+    check_args None (get_arg_types tes)
+    |> Result.error |> Option.value_exn |> illtyped
+  else
+    (* Every combination of the overloads of [f] (and [jac]) *)
+    let overloads fname =
+      Env.find tenv (Utils.stdlib_distribution_name fname.name) in
+    let fn_arg_type ftype = (calculate_autodifftype cf Functions ftype, ftype) in
+    let matching (infos : Env.info list) =
+      let ftypes = List.map infos ~f:(fun Env.{type_; _} -> type_) in
+      check_args
+        (Env.location (List.hd_exn infos))
+        (List.map ftypes ~f:fn_arg_type @ get_arg_types remaining_es)
+      |> Result.map ~f:(fun ((_, location), promotions) ->
+          ((ftypes, location), promotions)) in
+    let candidates =
+      List.map fn_names ~f:overloads
+      |> List.fold_right ~init:[[]] ~f:(fun infos combinations ->
+          List.concat_map infos ~f:(fun info ->
+              List.map combinations ~f:(fun rest -> info :: rest)))
+      |> List.map ~f:matching in
+    let ok, errs = List.partition_map candidates ~f:Result.to_either in
+    match SignatureMismatch.unique_minimum_promotion ok with
+    | Ok ((ftypes, _), promotions) ->
+        let fn_es =
+          List.map2_exn fn_names ftypes ~f:(make_function_variable cf loc) in
+        mk_fun_app ~is_cond_dist ~loc (StanLib FnPlain) id
+          (Promotion.promote_list (fn_es @ remaining_es) promotions)
+          ~type_:return_type
+    | Error (Some tied) ->
+        (* Only [f] can be ambiguous: [jac] must take exactly [f]'s argument
+           types, and overloads cannot differ in data qualifiers alone, so at
+           most one overload of [jac] fits an overload of [f]. *)
+        let ps =
+          List.filter_map tied ~f:(function
+            | UnsizedType.UFun (args, rt, _, _) :: _, loc -> Some (rt, args, loc)
+            | _ -> None) in
+        Semantic_error.ambiguous_function_promotion loc
+          (List.hd_exn fn_names).name None ps
+        |> error
+    | Error None -> illtyped (List.hd_exn errs)
 
 and check_funapp loc cf tenv ~is_cond_dist id (es : Ast.typed_expression list) =
   let name_check =

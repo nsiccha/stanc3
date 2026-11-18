@@ -1,0 +1,332 @@
+  $ ../../../../../install/default/bin/stanc bad_check_missing_jac.stan
+Semantic error in 'bad_check_missing_jac.stan', line 16, column 47 to column 48:
+   -------------------------------------------------
+    14:  }
+    15:  transformed parameters {
+    16:    real err = ode_jacobian_error(decay, t0, y0, k);
+                                                        ^
+    17:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "ode_jacobian_error":
+(<F1>, real, vector, vector)
+where F1 = (real, vector, vector) => vector
+Available signatures:
+(<F1>, <F2>, real, vector, vector) => vector
+where F2 = (real, vector, vector) => matrix
+  Expected 5 arguments but found 4 arguments.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_check_return_type.stan
+Semantic error in 'bad_check_return_type.stan', line 18, column 2 to column 66:
+   -------------------------------------------------
+    16:  }
+    17:  transformed parameters {
+    18:    vector[2] err = ode_jacobian_error(decay, decay_jac, t0, y0, k);
+           ^
+    19:  }
+   -------------------------------------------------
+
+Ill-typed assignment statement.
+Expected the right hand side to have a type matching the destination (vector).
+Instead found type real.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_dae_jac_args.stan
+Semantic error in 'bad_dae_jac_args.stan', line 19, column 43 to column 55:
+   -------------------------------------------------
+    17:  }
+    18:  transformed parameters {
+    19:    array[4] vector[2] y_hat = dae(residual, residual_jac, y0, -k .* y0, t0, ts, k);
+                                                    ^
+    20:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "dae":
+(<F1>, <F2>, vector, vector, real, array[] real, vector)
+where F1 = (real, vector, vector, vector) => vector
+      F2 = (real, vector, vector) => matrix
+Available signatures:
+(<F1>, <F3>, vector, vector, data real, data array[] real, vector) => vector
+where F3 = (real, vector, vector, vector) => matrix
+  The second argument must be
+   (real, vector, vector, vector) => matrix
+  but got
+   (real, vector, vector) => matrix
+  These are not compatible because:
+    One takes 3 arguments but the other takes 4 arguments.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_dde_check_lag_type.stan
+Semantic error in 'bad_dde_check_lag_type.stan', line 18, column 62 to column 64:
+   -------------------------------------------------
+    16:  transformed parameters {
+    17:    // y_lag is a matrix with one column per delay
+    18:    real err = dde_jacobian_error(delayed, delayed_jac, t0, y0, y0, k);
+                                                                       ^
+    19:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "dde_jacobian_error":
+(<F1>, <F2>, real, vector, vector, vector)
+where F1 = (real, vector, matrix, vector) => vector
+      F2 = (real, vector, matrix, vector) => matrix
+Available signatures:
+(<F1>, <F2>, real, vector, matrix, vector) => vector
+  The 5th argument must be matrix but got vector
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_dde_jac_return_type.stan
+Semantic error in 'bad_dde_jac_return_type.stan', line 19, column 51 to column 62:
+   -------------------------------------------------
+    17:  }
+    18:  transformed parameters {
+    19:    array[4] vector[2] y_hat = dde_rk45_tol(delayed, delayed_jac, y0, t0, ts, tau, 1e-6, 1e-6, 1000, k);
+                                                            ^
+    20:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "dde_rk45_tol":
+(<F1>, <F2>, vector, real, array[] real, vector, real, real, int, vector)
+where F1 = (real, vector, matrix, vector) => vector
+      F2 = (real, vector, matrix, vector) => array[] vector
+Available signatures:
+(<F1>, <F3>, vector, data real, data array[] real, vector, data real,
+ data real, data int, vector) => vector
+where F3 = (real, vector, matrix, vector) => matrix
+  The second argument must be
+   (real, vector, matrix, vector) => matrix
+  but got
+   (real, vector, matrix, vector) => array[] vector
+  The return types are not compatible.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_adjoint_tolerances.stan
+Semantic error in 'bad_jac_adjoint_tolerances.stan', line 18, column 85 to column 89:
+   -------------------------------------------------
+    16:  }
+    17:  transformed parameters {
+    18:    array[4] vector[2] y_hat = ode_adjoint_tol_ctl(decay, decay_jac, y0, t0, ts, 1e-6, 1e-6, 1e-6, rep_vector(1e-6, 2), 1e-6, 1e-6, 1000, 150, 1, 2, 2, k);
+                                                                                              ^
+    19:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "ode_adjoint_tol_ctl":
+(<F1>, <F2>, vector, real, array[] real, real, real, real, vector, real,
+ real, int, int, int, int, int, vector)
+where F1 = (real, vector, vector) => vector
+      F2 = (real, vector, vector) => matrix
+Available signatures:
+(<F1>, <F2>, vector, real, array[] real, data real, data vector, data real,
+ data vector, data real, data real, data int, data int, data int, data int,
+ data int, vector) => vector
+  The 7th argument must be vector but got real
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_after_state.stan
+Semantic error in 'bad_jac_after_state.stan', line 18, column 68 to column 69:
+   -------------------------------------------------
+    16:  }
+    17:  transformed parameters {
+    18:    array[4] vector[2] y_hat = ode_rk45(decay, y0, decay_jac, t0, ts, k);
+                                                                             ^
+    19:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "ode_rk45":
+(<F1>, vector, <F2>, real, array[] real, vector)
+where F1 = (real, vector, vector) => vector
+      F2 = (real, vector, vector) => matrix
+Available signatures:
+(<F1>, vector, real, array[] real, vector) => vector
+  Expected 5 arguments but found 6 arguments.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_algebra_solver.stan
+Semantic error in 'bad_jac_algebra_solver.stan', line 21, column 53 to column 54:
+   -------------------------------------------------
+    19:  }
+    20:  transformed parameters {
+    21:    vector[2] x = solve_newton(algebra, decay_jac, y0, k);
+                                                              ^
+    22:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "solve_newton":
+(<F1>, <F2>, vector, vector)
+where F1 = (vector, vector) => vector
+      F2 = (real, vector, vector) => matrix
+Available signatures:
+(<F1>, vector, vector) => vector
+  Expected 3 arguments but found 4 arguments.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_ambiguous_f.stan
+Semantic error in 'bad_jac_ambiguous_f.stan', line 25, column 29 to column 76:
+   -------------------------------------------------
+    23:  }
+    24:  transformed parameters {
+    25:    array[4] vector[2] y_hat = ode_rk45(decay, decay_jac, y0, t0, ts, k, 0, 0);
+                                      ^
+    26:  }
+   -------------------------------------------------
+
+No unique minimum promotion found for function "decay".
+Overloaded functions must not have multiple equally valid promotion paths.
+This function has several:
+(real, vector, vector, real, int) => vector
+(real, vector, vector, int, real) => vector
+Consider defining a new signature for the exact types needed or
+re-thinking existing definitions.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_arg_type.stan
+Semantic error in 'bad_jac_arg_type.stan', line 18, column 45 to column 54:
+   -------------------------------------------------
+    16:  }
+    17:  transformed parameters {
+    18:    array[4] vector[2] y_hat = ode_rk45(decay, decay_jac, y0, t0, ts, k);
+                                                      ^
+    19:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "ode_rk45":
+(<F1>, <F2>, vector, real, array[] real, vector)
+where F1 = (real, vector, vector) => vector
+      F2 = (real, vector, array[] real) => matrix
+Available signatures:
+(<F1>, <F3>, vector, real, array[] real, vector) => vector
+where F3 = (real, vector, vector) => matrix
+  The second argument must be
+   (real, vector, vector) => matrix
+  but got
+   (real, vector, array[] real) => matrix
+  These are not compatible because:
+    The types for the third argument are incompatible: one is
+     array[] real
+    but the other is
+     vector
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_data_only.stan
+Semantic error in 'bad_jac_data_only.stan', line 18, column 46 to column 55:
+   -------------------------------------------------
+    16:  }
+    17:  transformed parameters {
+    18:    array[4] vector[2] y_hat = ode_adams(decay, decay_jac, y0, t0, ts, k);
+                                                       ^
+    19:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "ode_adams":
+(<F1>, <F2>, vector, real, array[] real, vector)
+where F1 = (real, vector, vector) => vector
+      F2 = (real, vector, data vector) => matrix
+Available signatures:
+(<F1>, <F3>, vector, real, array[] real, vector) => vector
+where F3 = (real, vector, vector) => matrix
+  The second argument must be
+   (real, vector, vector) => matrix
+  but got
+   (real, vector, data vector) => matrix
+  These are not compatible because:
+    The third argument has an incompatible data-qualifier.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_fewer_args.stan
+Semantic error in 'bad_jac_fewer_args.stan', line 18, column 45 to column 54:
+   -------------------------------------------------
+    16:  }
+    17:  transformed parameters {
+    18:    array[4] vector[2] y_hat = ode_rk45(decay, decay_jac, y0, t0, ts, k);
+                                                      ^
+    19:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "ode_rk45":
+(<F1>, <F2>, vector, real, array[] real, vector)
+where F1 = (real, vector, vector) => vector
+      F2 = (real, vector) => matrix
+Available signatures:
+(<F1>, <F3>, vector, real, array[] real, vector) => vector
+where F3 = (real, vector, vector) => matrix
+  The second argument must be
+   (real, vector, vector) => matrix
+  but got
+   (real, vector) => matrix
+  These are not compatible because:
+    One takes 2 arguments but the other takes 3 arguments.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_no_matching_overload.stan
+Semantic error in 'bad_jac_no_matching_overload.stan', line 21, column 49 to column 58:
+   -------------------------------------------------
+    19:  }
+    20:  transformed parameters {
+    21:    array[4] vector[2] y_hat = ode_rk45_tol(decay, decay_jac, y0, t0, ts, 1e-6, 1e-6, 1000, k);
+                                                          ^
+    22:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "ode_rk45_tol":
+(<F1>, <F2>, vector, real, array[] real, real, real, int, vector)
+where F1 = (real, vector, vector) => vector
+      F2 = (real, vector, vector, real) => matrix
+Available signatures:
+(<F1>, <F3>, vector, real, array[] real, data real, data real, data int,
+ vector) => vector
+where F3 = (real, vector, vector) => matrix
+  The second argument must be
+   (real, vector, vector) => matrix
+  but got
+   (real, vector, vector, real) => matrix
+  These are not compatible because:
+    One takes 4 arguments but the other takes 3 arguments.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_return_type.stan
+Semantic error in 'bad_jac_return_type.stan', line 18, column 44 to column 53:
+   -------------------------------------------------
+    16:  }
+    17:  transformed parameters {
+    18:    array[4] vector[2] y_hat = ode_bdf(decay, decay_jac, y0, t0, ts, k);
+                                                     ^
+    19:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "ode_bdf":
+(<F1>, <F1>, vector, real, array[] real, vector)
+where F1 = (real, vector, vector) => vector
+Available signatures:
+(<F1>, <F2>, vector, real, array[] real, vector) => vector
+where F2 = (real, vector, vector) => matrix
+  The second argument must be
+   (real, vector, vector) => matrix
+  but got
+   (real, vector, vector) => vector
+  The return types are not compatible.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_rng.stan
+Semantic error in 'bad_jac_rng.stan', line 18, column 45 to column 58:
+   -------------------------------------------------
+    16:  }
+    17:  transformed parameters {
+    18:    array[4] vector[2] y_hat = ode_ckrk(decay, decay_jac_rng, y0, t0, ts, k);
+                                                      ^
+    19:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "ode_ckrk":
+(<F1>, <F2>, vector, real, array[] real, vector)
+where F1 = (real, vector, vector) => vector
+      F2 = (real, vector, vector) => matrix
+Available signatures:
+(<F1>, <F3>, vector, real, array[] real, vector) => vector
+where F3 = (real, vector, vector) => matrix
+  The second argument must be a pure function but got an rng function. These function types are not compatible.
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_variadic_args.stan
+Semantic error in 'bad_jac_variadic_args.stan', line 18, column 68 to column 72:
+   -------------------------------------------------
+    16:  }
+    17:  transformed parameters {
+    18:    array[4] vector[2] y_hat = ode_rk45(decay, decay_jac, y0, t0, ts, k[1]);
+                                                                             ^
+    19:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "ode_rk45":
+(<F1>, <F2>, vector, real, array[] real, real)
+where F1 = (real, vector, vector) => vector
+      F2 = (real, vector, vector) => matrix
+Available signatures:
+(<F1>, <F2>, vector, real, array[] real, vector) => vector
+  The 6th argument must be vector but got real
+[exit 1]

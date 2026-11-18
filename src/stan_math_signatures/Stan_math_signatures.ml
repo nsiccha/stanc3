@@ -28,7 +28,14 @@ let is_stan_math_variadic_function_name =
   Hashtbl.mem stan_math_variadic_signatures
 
 let lookup_stan_math_variadic_function =
-  Hashtbl.find stan_math_variadic_signatures
+  Hashtbl.find_multi stan_math_variadic_signatures
+
+let variadic_function_arg_count UnsizedType.{jacobian_fn_rt; _} =
+  if Option.is_some jacobian_fn_rt then 2 else 1
+
+let find_stan_math_variadic_function name ~function_args =
+  lookup_stan_math_variadic_function name
+  |> List.find ~f:(fun s -> variadic_function_arg_count s = function_args)
 
 let operator_to_stan_math_fns op =
   match op with

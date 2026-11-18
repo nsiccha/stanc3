@@ -287,13 +287,22 @@ let matching_function env name args =
 let matching_stanlib_function =
   matching_function Environment.stan_math_environment
 
-let check_variadic_args ~allow_lpdf mandatory_arg_tys mandatory_fun_arg_tys
-    location fun_return args =
+let check_variadic_args ~allow_lpdf ?jacobian_rt mandatory_arg_tys
+    mandatory_fun_arg_tys location fun_return args =
   let minimal_func_type =
     UnsizedType.UFun (mandatory_fun_arg_tys, ReturnType fun_return, FnPlain, AoS)
   in
+  (* The Jacobian [jac] of [f], if there is one, follows [f]: it takes exactly
+     [f]'s arguments, so it is checked like any function argument against the
+     type [f] determines. *)
+  let jacobian_args fun_args =
+    Option.value_map jacobian_rt ~default:[] ~f:(fun rt ->
+        [ ( UnsizedType.AutoDiffable
+          , UnsizedType.UFun (fun_args, ReturnType rt, FnPlain, AoS) ) ]) in
   let minimal_args =
-    (UnsizedType.AutoDiffable, minimal_func_type) :: mandatory_arg_tys in
+    (UnsizedType.AutoDiffable, minimal_func_type)
+    :: jacobian_args mandatory_fun_arg_tys
+    @ mandatory_arg_tys in
   let wrap_err x = Error (minimal_args, ArgError (1, x), location) in
   match args with
   | ( _
@@ -319,8 +328,9 @@ let check_variadic_args ~allow_lpdf mandatory_arg_tys mandatory_fun_arg_tys
                      (ReturnType fun_return, ReturnType return_type))
             | Ok _ ->
                 let expected_args =
-                  ((UnsizedType.AutoDiffable, func_type) :: mandatory_arg_tys)
-                  @ variadic_arg_tys in
+                  (UnsizedType.AutoDiffable, func_type)
+                  :: jacobian_args fun_args
+                  @ mandatory_arg_tys @ variadic_arg_tys in
                 check_compatible_arguments 0 expected_args args
                 |> Result.map ~f:(fun x -> ((func_type, location), x))
                 |> Result.map_error ~f:(fun x -> (expected_args, x, location)))

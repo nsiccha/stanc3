@@ -102,9 +102,11 @@ let (stan_math_signatures : (string, UnsizedType.signature list) Hashtbl.t) =
 
 (** The variadic signatures hash table
 
-    These functions cannot be overloaded. *)
+    These functions cannot be overloaded by user-defined functions. A name has
+    more than one signature only when they differ in the number of leading
+    function arguments ([f], or [f] and its Jacobian [jac]). *)
 let (stan_math_variadic_signatures :
-      (string, UnsizedType.variadic_signature) Hashtbl.t) =
+      (string, UnsizedType.variadic_signature list) Hashtbl.t) =
   String.Table.create ()
 
 (* XXX The correct word here isn't combination - what is it? *)
@@ -2647,41 +2649,75 @@ let variadic_dae_fun_return_type = UnsizedType.UVector
 let variadic_dae_return_type = UnsizedType.UArray UnsizedType.UVector
 
 let add_variadic_fn name ~return_type ?control_args ~required_fn_rt
-    ?required_fn_args () =
+    ?required_fn_args ?jacobian_fn_rt () =
   let control_args = Option.value control_args ~default:[] in
   let required_fn_args = Option.value required_fn_args ~default:[] in
-  Hashtbl.add_exn stan_math_variadic_signatures ~key:name
+  Hashtbl.add_multi stan_math_variadic_signatures ~key:name
     ~data:
-      UnsizedType.{return_type; control_args; required_fn_rt; required_fn_args}
+      UnsizedType.
+        { return_type
+        ; control_args
+        ; required_fn_rt
+        ; required_fn_args
+        ; jacobian_fn_rt }
+
+(* The user Jacobian of an ODE, DAE or DDE right-hand side: one matrix, with a
+   row per state and a column per state, lagged state (DDE) or state derivative
+   (DAE), then per real scalar of the variadic arguments. Stan Math checks its
+   size at run time. *)
+let solver_jacobian_return_type = UnsizedType.UMatrix
+
+(** Add an ODE/DAE/DDE solver [name(f, control_args..., ...)] and its overload
+    [name(f, jac, control_args..., ...)] taking the Jacobian of [f]. *)
+let add_solver_fn name ~return_type ~control_args ~required_fn_rt
+    ~required_fn_args =
+  add_variadic_fn name ~return_type ~control_args ~required_fn_rt
+    ~required_fn_args ();
+  add_variadic_fn name ~return_type ~control_args ~required_fn_rt
+    ~required_fn_args ~jacobian_fn_rt:solver_jacobian_return_type ()
+
+(** Add [name(f, jac, point..., ...)], which returns the largest difference
+    between [jac] and the autodiff Jacobian of [f] at [point], the arguments [f]
+    takes before its variadic ones. *)
+let add_solver_jacobian_check_fn name ~required_fn_rt ~required_fn_args =
+  add_variadic_fn name ~return_type:UnsizedType.UReal
+    ~control_args:required_fn_args ~required_fn_rt ~required_fn_args
+    ~jacobian_fn_rt:solver_jacobian_return_type ()
 
 let () =
   (* DAEs *)
-  add_variadic_fn "dae" ~return_type:variadic_dae_return_type
+  add_solver_fn "dae" ~return_type:variadic_dae_return_type
     ~control_args:variadic_dae_mandatory_arg_types
     ~required_fn_args:variadic_dae_mandatory_fun_args
-    ~required_fn_rt:variadic_dae_fun_return_type ();
-  add_variadic_fn "dae_tol" ~return_type:variadic_dae_return_type
+    ~required_fn_rt:variadic_dae_fun_return_type;
+  add_solver_fn "dae_tol" ~return_type:variadic_dae_return_type
     ~control_args:(variadic_dae_mandatory_arg_types @ variadic_dae_tol_arg_types)
     ~required_fn_args:variadic_dae_mandatory_fun_args
-    ~required_fn_rt:variadic_dae_fun_return_type ();
+    ~required_fn_rt:variadic_dae_fun_return_type;
+  add_solver_jacobian_check_fn "dae_jacobian_error"
+    ~required_fn_args:variadic_dae_mandatory_fun_args
+    ~required_fn_rt:variadic_dae_fun_return_type;
   (* DDEs *)
-  add_variadic_fn "dde_rk45" ~return_type:variadic_ode_return_type
+  add_solver_fn "dde_rk45" ~return_type:variadic_ode_return_type
     ~control_args:variadic_dde_mandatory_arg_types
     ~required_fn_args:variadic_dde_mandatory_fun_args
-    ~required_fn_rt:variadic_ode_fun_return_type ();
-  add_variadic_fn "dde_rk45_tol" ~return_type:variadic_ode_return_type
+    ~required_fn_rt:variadic_ode_fun_return_type;
+  add_solver_fn "dde_rk45_tol" ~return_type:variadic_ode_return_type
     ~control_args:(variadic_dde_mandatory_arg_types @ variadic_ode_tol_arg_types)
     ~required_fn_args:variadic_dde_mandatory_fun_args
-    ~required_fn_rt:variadic_ode_fun_return_type ();
+    ~required_fn_rt:variadic_ode_fun_return_type;
+  add_solver_jacobian_check_fn "dde_jacobian_error"
+    ~required_fn_args:variadic_dde_mandatory_fun_args
+    ~required_fn_rt:variadic_ode_fun_return_type;
   (* non-adjoint ODES - same for all *)
   let add_ode name =
-    add_variadic_fn name ~return_type:variadic_ode_return_type
+    add_solver_fn name ~return_type:variadic_ode_return_type
       ~control_args:
         (if String.is_suffix name ~suffix:ode_tolerances_suffix then
            variadic_ode_mandatory_arg_types @ variadic_ode_tol_arg_types
          else variadic_ode_mandatory_arg_types)
       ~required_fn_rt:variadic_ode_fun_return_type
-      ~required_fn_args:variadic_ode_mandatory_fun_args () in
+      ~required_fn_args:variadic_ode_mandatory_fun_args in
   Set.iter ~f:add_ode variadic_ode_nonadjoint_fns;
   (* Torsten ODES - same for all *)
   let add_ode name =
@@ -2694,11 +2730,14 @@ let () =
       ~required_fn_args:variadic_ode_mandatory_fun_args () in
   Set.iter ~f:add_ode pmx_variadic_ode_fns;
   (* Adjoint ODE function *)
-  add_variadic_fn variadic_ode_adjoint_fn ~return_type:variadic_ode_return_type
+  add_solver_fn variadic_ode_adjoint_fn ~return_type:variadic_ode_return_type
     ~control_args:
       (variadic_ode_mandatory_arg_types @ variadic_ode_adjoint_ctl_tol_arg_types)
     ~required_fn_rt:variadic_ode_fun_return_type
-    ~required_fn_args:variadic_ode_mandatory_fun_args ();
+    ~required_fn_args:variadic_ode_mandatory_fun_args;
+  add_solver_jacobian_check_fn "ode_jacobian_error"
+    ~required_fn_args:variadic_ode_mandatory_fun_args
+    ~required_fn_rt:variadic_ode_fun_return_type;
   (* Algebra solvers *)
   add_variadic_fn "solve_newton" ~return_type:UnsizedType.UVector
     ~control_args:[UnsizedType.(AutoDiffable, UVector)]
@@ -2759,7 +2798,7 @@ let stan_math_signatures :
   Printf.printf
     {|
 let stan_math_variadic_signatures :
-    Middle.UnsizedType.variadic_signature Core.String.Table.t =
+    Middle.UnsizedType.variadic_signature list Core.String.Table.t =
   unmarshal_hashtbl %S |}
     (marshal_hashtbl stan_math_variadic_signatures);
   Printf.printf
