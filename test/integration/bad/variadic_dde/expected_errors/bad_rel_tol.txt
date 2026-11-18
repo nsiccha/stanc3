@@ -1,0 +1,21 @@
+/* $ stanc ../bad_rel_tol.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "dde_rk45_tol".
+    ┌─ ../bad_rel_tol.stan:22:78
+  1 │  functions {
+  2 │    vector delayed_turnover(real t, vector y, matrix y_lag, vector k) {
+    │           ---------------- Callback defined here.
+  3 │      vector[2] dydt;
+    ⋯  
+ 21 │  transformed parameters {
+ 22 │    array[4] vector[2] y_hat = dde_rk45_tol(delayed_turnover, y0, t0, ts, tau, rtol, 1e-6, 1000, k);
+    │                                                                               ^^^^ Function called here.
+ 23 │  }
+    = Supplied arguments:
+      (<F1>, vector, real, array[] real, vector, real, real, int, vector)
+      where F1 = (real, vector, matrix, vector) => vector
+    = Available signatures:
+      (<F1>, vector, data real, data array[] real, vector, data real,
+       data real, data int, vector) => vector
+        The 6th argument must be data-only.
+        (Local variables are assumed to depend on parameters; same goes for
+        function inputs unless they are marked with the keyword "data".)

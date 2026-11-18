@@ -1,4 +1,4 @@
-open Core
+open Std
 open Ast
 open Deprecation_analysis
 
@@ -88,7 +88,7 @@ let rec blocks_stmt ({stmt; smeta} : typed_statement) : typed_statement =
         blocks_stmt
         @@ mk_typed_statement
              ~stmt:(Block [{stmt; smeta}])
-             ~return_type:smeta.return_type ~loc:smeta.loc in
+             ~flow_type:smeta.flow_type ~loc:smeta.loc in
   let stmt =
     match stmt with
     | While (e, s) -> While (e, stmt_to_block s)
@@ -101,7 +101,7 @@ let rec blocks_stmt ({stmt; smeta} : typed_statement) : typed_statement =
         IfThenElse (e, stmt_to_block s1, Option.map ~f:stmt_to_block s2)
     | For ({loop_body; _} as f) ->
         For {f with loop_body= stmt_to_block loop_body}
-    | _ -> map_statement Fn.id blocks_stmt Fn.id stmt in
+    | _ -> map_statement Fun.id blocks_stmt Fun.id stmt in
   {stmt; smeta}
 
 let canonicalize_program program settings : typed_program =

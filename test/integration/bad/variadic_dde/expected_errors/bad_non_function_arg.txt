@@ -1,0 +1,18 @@
+/* $ stanc ../bad_non_function_arg.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "dde_rk45".
+    ┌─ ../bad_non_function_arg.stan:14:39
+  5 │    vector[2] tau;
+  6 │    real g;
+    │         - Callback defined here.
+  7 │    array[4] vector[2] y;
+    ⋯  
+ 13 │  transformed parameters {
+ 14 │    array[4] vector[2] y_hat = dde_rk45(g, y0, t0, ts, tau, k);
+    │                                        ^ Function called here.
+ 15 │  }
+    = Supplied arguments:
+      (real, vector, real, array[] real, vector, vector)
+    = Available signatures:
+      (<F1>, vector, data real, data array[] real, vector) => vector
+      where F1 = (real, vector, matrix) => vector
+        The first argument must be <F1> but got real

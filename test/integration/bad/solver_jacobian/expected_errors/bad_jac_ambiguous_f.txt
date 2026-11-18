@@ -1,0 +1,24 @@
+/* $ stanc ../bad_jac_ambiguous_f.stan : [exit 1] */
+error: No unique minimum promotion found for function "decay".
+    ┌─ ../bad_jac_ambiguous_f.stan:25:30
+  2 │    // two overloads of f are equally good for the call below; jac fits both
+  3 │    vector decay(real t, vector y, vector k, int a, real b) {
+    │           ----- Function defined here.
+  4 │      return -k .* y;
+  5 │    }
+  6 │    vector decay(real t, vector y, vector k, real a, int b) {
+    │           ----- Function defined here.
+  7 │      return -k .* y;
+    ⋯  
+ 24 │  transformed parameters {
+ 25 │    array[4] vector[2] y_hat = ode_rk45(decay, decay_jac, y0, t0, ts, k, 0, 0);
+    │                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ No unique minimum promotion found for function 
+    │                                                                               "decay".
+ 26 │  }
+    = Overloaded functions must not have multiple equally valid promotion paths.
+      This function has several:
+      (real, vector, vector, real, int) => vector
+      (real, vector, vector, int, real) => vector
+    = Consider defining a new signature for the exact types needed or
+      re-thinking
+      existing definitions.

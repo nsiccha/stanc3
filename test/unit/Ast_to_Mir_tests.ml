@@ -1,5 +1,5 @@
 open Middle
-open Core
+open Std.Sexp_conv
 
 let%expect_test "Operator-assign example" =
   Test_utils.mir_of_string
@@ -46,11 +46,11 @@ let%expect_test "Prefix-Op-Example" =
            ((pattern
              (IfElse
               ((pattern
-                (FunApp (StanLib Less__ FnPlain AoS)
+                (FunApp (Operator Less)
                  (((pattern (Var i))
                    (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
                   ((pattern
-                    (FunApp (StanLib PMinus__ FnPlain AoS)
+                    (FunApp (Operator PMinus)
                      (((pattern (Lit Int 1))
                        (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
                    (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
@@ -116,7 +116,7 @@ let%expect_test "gen quant" =
     (((pattern
        (IfElse
         ((pattern
-          (FunApp (StanLib PNot__ FnPlain AoS)
+          (FunApp (Operator PNot)
            (((pattern
               (EOr
                ((pattern (Var emit_transformed_parameters__))
@@ -130,7 +130,7 @@ let%expect_test "gen quant" =
      ((pattern
        (IfElse
         ((pattern
-          (FunApp (StanLib PNot__ FnPlain AoS)
+          (FunApp (Operator PNot)
            (((pattern (Var emit_generated_quantities__))
              (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
          (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
@@ -218,7 +218,7 @@ let%expect_test "read data - tuple" =
         (initialize Default)))
       (meta <opaque>))
      ((pattern
-       (For (loopvar sym1__)
+       (For (loopvar idx1__)
         (lower
          ((pattern (Lit Int 1))
           (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))
@@ -233,7 +233,7 @@ let%expect_test "read data - tuple" =
                 (((pattern
                    (NRFunApp
                     (CompilerInternal
-                     (FnCheck (trans Simplex) (var_name x[sym1__].2)
+                     (FnCheck (trans Simplex) (var_name x[idx1__].2)
                       (var
                        ((pattern
                          (TupleProjection
@@ -245,7 +245,7 @@ let%expect_test "read data - tuple" =
                                 (loc <opaque>)
                                 (adlevel (TupleAD (DataOnly DataOnly))))))
                              ((Single
-                               ((pattern (Var sym1__))
+                               ((pattern (Var idx1__))
                                 (meta
                                  ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))))
                            (meta
@@ -253,10 +253,10 @@ let%expect_test "read data - tuple" =
                              (adlevel (TupleAD (DataOnly DataOnly))))))
                           2))
                         (meta
-                         ((type_ UVector) (loc <opaque>)
-                          (adlevel (TupleAD (DataOnly DataOnly)))))))))
+                         ((type_ UVector) (loc <opaque>) (adlevel DataOnly)))))))
                     ()))
                   (meta <opaque>)))))
               (meta <opaque>)))))
           (meta <opaque>)))))
-      (meta <opaque>))) |}]
+      (meta <opaque>)))
+    |}]

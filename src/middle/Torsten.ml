@@ -1,4 +1,4 @@
-open Core
+open Std
 
 (* old ODE RHS def *)
 let pmx_ode_func =
@@ -201,8 +201,8 @@ let pmx_solve_dde_args =
   List.map pmx_solve_args ~f:(function
     | theta :: tail -> (theta :: tau_y_hist) @ tail
     | [] ->
-        Common.ICE.internal_compiler_error
-          [%message "Torsten: pmx_solve argument list without theta"])
+        Common.ICE.internal_error
+          "Torsten: pmx_solve argument list without theta")
 
 (* torsten functions *)
 let add_torsten_qualified add_func =

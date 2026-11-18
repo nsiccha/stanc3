@@ -1,0 +1,10 @@
+/* $ stanc ../bad_check_return_type.stan : [exit 1] */
+error: Ill-typed assignment statement.
+    ┌─ ../bad_check_return_type.stan:18:19
+ 17 │  transformed parameters {
+ 18 │    vector[2] err = ode_jacobian_error(decay, decay_jac, t0, y0, k);
+    │              ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected the right hand side to have a type matching the destination.
+    │              │                                                     Instead found type real.
+    │              │
+    │              Left hand side has type vector.
+ 19 │  }

@@ -1,0 +1,23 @@
+/* $ stanc ../bad_jac_return_type.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "ode_bdf".
+    ┌─ ../bad_jac_return_type.stan:18:45
+  1 │  functions {
+  2 │    vector decay(real t, vector y, vector k) {
+    │           ----- Callback defined here.
+  3 │      return -k .* y;
+    ⋯  
+ 17 │  transformed parameters {
+ 18 │    array[4] vector[2] y_hat = ode_bdf(decay, decay_jac, y0, t0, ts, k);
+    │                                              ^^^^^^^^^ Function called here.
+ 19 │  }
+    = Supplied arguments:
+      (<F1>, <F1>, vector, real, array[] real, vector)
+      where F1 = (real, vector, vector) => vector
+    = Available signatures:
+      (<F1>, <F2>, vector, real, array[] real, vector) => vector
+      where F2 = (real, vector, vector) => matrix
+        The second argument must be
+         (real, vector, vector) => matrix
+        but got
+         (real, vector, vector) => vector
+        The return types are not compatible.

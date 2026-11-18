@@ -1,0 +1,23 @@
+/* $ stanc ../bad_function_return_type.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "dde_rk45".
+    ┌─ ../bad_function_return_type.stan:18:39
+  1 │  functions {
+  2 │    array[] real delayed_turnover(real t, vector y, matrix y_lag, vector k) {
+    │                 ---------------- Callback defined here.
+  3 │      return {k[1] - k[2] * y_lag[1, 1], k[2] * y_lag[1, 1] - k[3] * y[2]};
+    ⋯  
+ 17 │  transformed parameters {
+ 18 │    array[4] vector[2] y_hat = dde_rk45(delayed_turnover, y0, t0, ts, tau, k);
+    │                                        ^^^^^^^^^^^^^^^^ Function called here.
+ 19 │  }
+    = Supplied arguments:
+      (<F1>, vector, real, array[] real, vector, vector)
+      where F1 = (real, vector, matrix, vector) => array[] real
+    = Available signatures:
+      (<F2>, vector, data real, data array[] real, vector) => vector
+      where F2 = (real, vector, matrix) => vector
+        The first argument must be
+         (real, vector, matrix) => vector
+        but got
+         (real, vector, matrix, vector) => array[] real
+        The return types are not compatible.

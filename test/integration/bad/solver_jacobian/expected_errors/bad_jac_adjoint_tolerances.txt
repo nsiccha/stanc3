@@ -1,0 +1,22 @@
+/* $ stanc ../bad_jac_adjoint_tolerances.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "ode_adjoint_tol_ctl".
+    ┌─ ../bad_jac_adjoint_tolerances.stan:18:86
+  1 │  functions {
+  2 │    vector decay(real t, vector y, vector k) {
+    │           ----- Callback defined here.
+  3 │      return -k .* y;
+    ⋯  
+ 17 │  transformed parameters {
+ 18 │    array[4] vector[2] y_hat = ode_adjoint_tol_ctl(decay, decay_jac, y0, t0, ts, 1e-6, 1e-6, 1e-6, rep_vector(1e-6, 2), 1e-6, 1e-6, 1000, 150, 1, 2, 2, k);
+    │                                                                                       ^^^^ Function called here.
+ 19 │  }
+    = Supplied arguments:
+      (<F1>, <F2>, vector, real, array[] real, real, real, real, vector,
+       real, real, int, int, int, int, int, vector)
+      where F1 = (real, vector, vector) => vector
+            F2 = (real, vector, vector) => matrix
+    = Available signatures:
+      (<F1>, <F2>, vector, real, array[] real, data real, data vector,
+       data real, data vector, data real, data real, data int, data int,
+       data int, data int, data int, vector) => vector
+        The 7th argument must be vector but got real

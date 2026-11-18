@@ -1,0 +1,19 @@
+/* $ stanc ../bad_jac_algebra_solver.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "solve_newton".
+    ┌─ ../bad_jac_algebra_solver.stan:21:54
+  7 │    }
+  8 │    vector algebra(vector x, vector k) {
+    │           ------- Callback defined here.
+  9 │      return x - k;
+    ⋯  
+ 20 │  transformed parameters {
+ 21 │    vector[2] x = solve_newton(algebra, decay_jac, y0, k);
+    │                                                       ^ Function called here.
+ 22 │  }
+    = Supplied arguments:
+      (<F1>, <F2>, vector, vector)
+      where F1 = (vector, vector) => vector
+            F2 = (real, vector, vector) => matrix
+    = Available signatures:
+      (<F1>, vector, vector) => vector
+        Expected 3 arguments but found 4 arguments.

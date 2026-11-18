@@ -1,0 +1,26 @@
+/* $ stanc ../bad_dde_jac_return_type.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "dde_rk45_tol".
+    ┌─ ../bad_dde_jac_return_type.stan:19:52
+  1 │  functions {
+  2 │    vector delayed(real t, vector y, matrix y_lag, vector k) {
+    │           ------- Callback defined here.
+  3 │      return -k .* y_lag[ : , 1];
+    ⋯  
+ 18 │  transformed parameters {
+ 19 │    array[4] vector[2] y_hat = dde_rk45_tol(delayed, delayed_jac, y0, t0, ts, tau, 1e-6, 1e-6, 1000, k);
+    │                                                     ^^^^^^^^^^^ Function called here.
+ 20 │  }
+    = Supplied arguments:
+      (<F1>, <F2>, vector, real, array[] real, vector, real, real, int,
+       vector)
+      where F1 = (real, vector, matrix, vector) => vector
+            F2 = (real, vector, matrix, vector) => array[] vector
+    = Available signatures:
+      (<F1>, <F3>, vector, data real, data array[] real, vector, data real,
+       data real, data int, vector) => vector
+      where F3 = (real, vector, matrix, vector) => matrix
+        The second argument must be
+         (real, vector, matrix, vector) => matrix
+        but got
+         (real, vector, matrix, vector) => array[] vector
+        The return types are not compatible.

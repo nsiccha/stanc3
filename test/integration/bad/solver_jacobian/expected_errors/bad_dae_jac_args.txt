@@ -1,0 +1,25 @@
+/* $ stanc ../bad_dae_jac_args.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "dae".
+    ┌─ ../bad_dae_jac_args.stan:19:44
+  1 │  functions {
+  2 │    vector residual(real t, vector yy, vector yp, vector k) {
+    │           -------- Callback defined here.
+  3 │      return yp + k .* yy;
+    ⋯  
+ 18 │  transformed parameters {
+ 19 │    array[4] vector[2] y_hat = dae(residual, residual_jac, y0, -k .* y0, t0, ts, k);
+    │                                             ^^^^^^^^^^^^ Function called here.
+ 20 │  }
+    = Supplied arguments:
+      (<F1>, <F2>, vector, vector, real, array[] real, vector)
+      where F1 = (real, vector, vector, vector) => vector
+            F2 = (real, vector, vector) => matrix
+    = Available signatures:
+      (<F1>, <F3>, vector, vector, data real, data array[] real, vector) => vector
+      where F3 = (real, vector, vector, vector) => matrix
+        The second argument must be
+         (real, vector, vector, vector) => matrix
+        but got
+         (real, vector, vector) => matrix
+        These are not compatible because:
+          One takes 3 arguments but the other takes 4 arguments.

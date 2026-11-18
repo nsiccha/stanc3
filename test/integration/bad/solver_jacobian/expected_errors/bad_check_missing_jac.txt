@@ -1,0 +1,19 @@
+/* $ stanc ../bad_check_missing_jac.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "ode_jacobian_error".
+    ┌─ ../bad_check_missing_jac.stan:16:48
+  1 │  functions {
+  2 │    vector decay(real t, vector y, vector k) {
+    │           ----- Callback defined here.
+  3 │      return -k .* y;
+    ⋯  
+ 15 │  transformed parameters {
+ 16 │    real err = ode_jacobian_error(decay, t0, y0, k);
+    │                                                 ^ Function called here.
+ 17 │  }
+    = Supplied arguments:
+      (<F1>, real, vector, vector)
+      where F1 = (real, vector, vector) => vector
+    = Available signatures:
+      (<F1>, <F2>, real, vector, vector) => vector
+      where F2 = (real, vector, vector) => matrix
+        Expected 5 arguments but found 4 arguments.

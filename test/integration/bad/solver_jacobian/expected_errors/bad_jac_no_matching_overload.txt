@@ -1,0 +1,26 @@
+/* $ stanc ../bad_jac_no_matching_overload.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "ode_rk45_tol".
+    ┌─ ../bad_jac_no_matching_overload.stan:21:50
+  1 │  functions {
+  2 │    vector decay(real t, vector y, vector k) {
+    │           ----- Callback defined here.
+  3 │      return -k .* y;
+    ⋯  
+ 20 │  transformed parameters {
+ 21 │    array[4] vector[2] y_hat = ode_rk45_tol(decay, decay_jac, y0, t0, ts, 1e-6, 1e-6, 1000, k);
+    │                                                   ^^^^^^^^^ Function called here.
+ 22 │  }
+    = Supplied arguments:
+      (<F1>, <F2>, vector, real, array[] real, real, real, int, vector)
+      where F1 = (real, vector, vector) => vector
+            F2 = (real, vector, vector, real) => matrix
+    = Available signatures:
+      (<F1>, <F3>, vector, real, array[] real, data real, data real,
+       data int, vector) => vector
+      where F3 = (real, vector, vector) => matrix
+        The second argument must be
+         (real, vector, vector) => matrix
+        but got
+         (real, vector, vector, real) => matrix
+        These are not compatible because:
+          One takes 4 arguments but the other takes 3 arguments.

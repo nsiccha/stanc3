@@ -1,0 +1,19 @@
+/* $ stanc ../bad_jac_after_state.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "ode_rk45".
+    ┌─ ../bad_jac_after_state.stan:18:69
+  1 │  functions {
+  2 │    vector decay(real t, vector y, vector k) {
+    │           ----- Callback defined here.
+  3 │      return -k .* y;
+    ⋯  
+ 17 │  transformed parameters {
+ 18 │    array[4] vector[2] y_hat = ode_rk45(decay, y0, decay_jac, t0, ts, k);
+    │                                                                      ^ Function called here.
+ 19 │  }
+    = Supplied arguments:
+      (<F1>, vector, <F2>, real, array[] real, vector)
+      where F1 = (real, vector, vector) => vector
+            F2 = (real, vector, vector) => matrix
+    = Available signatures:
+      (<F1>, vector, real, array[] real, vector) => vector
+        Expected 5 arguments but found 6 arguments.

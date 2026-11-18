@@ -1,0 +1,67 @@
+/* $ stanc ../bad_lag_not_matrix.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "pmx_solve_dde_rk45".
+    ┌─ ../bad_lag_not_matrix.stan:25:21
+  2 │    functions {
+  3 │      vector rhs(real t, vector y, vector y_lag, array[] real theta,
+    │             --- Callback defined here.
+  4 │                 data array[] real x_r, data array[] int x_i) {
+    ⋯    
+ 24 │    transformed parameters {
+ 25 │      matrix[1, nt] x = pmx_solve_dde_rk45(rhs, 1, time, amt, rate, ii, evid, cmt,
+    │ ╭──────────────────────^
+ 26 │ │                                          addl, ss, theta, tau, y_hist);
+    │ ╰──────────────────────────────────────────────────────────────────────^ Function called here.
+ 27 │    }
+    = Supplied arguments:
+      (<F1>, int, array[] real, array[] real, array[] real, array[] real,
+       array[] int, array[] int, array[] int, array[] int, array[] real,
+       vector, vector)
+      where F1 = (real, vector, vector, array[] real, data array[] real,
+                  data array[] int) => vector
+    = Available signatures:
+      (<F2>, data int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[,] real, vector, vector) => matrix
+      where F2 = (real, vector, matrix, array[] real, data array[] real,
+                  data array[] int) => vector
+        The first argument must be
+         (real, vector, matrix, array[] real, data array[] real,
+          data array[] int) => vector
+        but got
+         (real, vector, vector, array[] real, data array[] real,
+          data array[] int) => vector
+        These are not compatible because:
+          The types for the third argument are incompatible: one is
+           vector
+          but the other is
+           matrix
+      (<F2>, data int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[] real, vector, vector) => matrix
+        The first argument must be
+         (real, vector, matrix, array[] real, data array[] real,
+          data array[] int) => vector
+        but got
+         (real, vector, vector, array[] real, data array[] real,
+          data array[] int) => vector
+        These are not compatible because:
+          The types for the third argument are incompatible: one is
+           vector
+          but the other is
+           matrix
+      (<F2>, data int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[,] real, vector, vector, data real, data real,
+       data real, data real, data real, data real) => matrix
+        Expected 19 arguments but found 13 arguments.
+      (<F2>, data int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[] real, vector, vector, data real, data real,
+       data real, data real, data real, data real) => matrix
+        Expected 19 arguments but found 13 arguments.
+      (<F2>, data int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[] real, vector, vector, array[] real,
+       data real, data real, data real, data real, data real, data real) => matrix
+        Expected 20 arguments but found 13 arguments.
+      (Additional signatures omitted)

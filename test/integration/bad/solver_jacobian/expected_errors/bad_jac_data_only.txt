@@ -1,0 +1,25 @@
+/* $ stanc ../bad_jac_data_only.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "ode_adams".
+    ┌─ ../bad_jac_data_only.stan:18:47
+  1 │  functions {
+  2 │    vector decay(real t, vector y, vector k) {
+    │           ----- Callback defined here.
+  3 │      return -k .* y;
+    ⋯  
+ 17 │  transformed parameters {
+ 18 │    array[4] vector[2] y_hat = ode_adams(decay, decay_jac, y0, t0, ts, k);
+    │                                                ^^^^^^^^^ Function called here.
+ 19 │  }
+    = Supplied arguments:
+      (<F1>, <F2>, vector, real, array[] real, vector)
+      where F1 = (real, vector, vector) => vector
+            F2 = (real, vector, data vector) => matrix
+    = Available signatures:
+      (<F1>, <F3>, vector, real, array[] real, vector) => vector
+      where F3 = (real, vector, vector) => matrix
+        The second argument must be
+         (real, vector, vector) => matrix
+        but got
+         (real, vector, data vector) => matrix
+        These are not compatible because:
+          The third argument has an incompatible data-qualifier.

@@ -1,0 +1,49 @@
+/* $ stanc ../bad_x_r_param.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "pmx_solve_dde_rk45".
+    ┌─ ../bad_x_r_param.stan:26:21
+  2 │    functions {
+  3 │      vector rhs(real t, vector y, matrix y_lag, array[] real theta,
+    │             --- Callback defined here.
+  4 │                 data array[] real x_r, data array[] int x_i) {
+    ⋯    
+ 25 │    transformed parameters {
+ 26 │      matrix[1, nt] x = pmx_solve_dde_rk45(rhs, 1, time, amt, rate, ii, evid, cmt,
+    │ ╭──────────────────────^
+ 27 │ │                                          addl, ss, theta, tau, y_hist, theta, theta, x_r);
+    │ ╰─────────────────────────────────────────────────────────────────────────────────────────^ Function called here.
+ 28 │    }
+    = Supplied arguments:
+      (<F1>, int, array[] real, array[] real, array[] real, array[] real,
+       array[] int, array[] int, array[] int, array[] int, array[] real,
+       vector, vector, array[] real, array[] real, array[,] real)
+      where F1 = (real, vector, matrix, array[] real, data array[] real,
+                  data array[] int) => vector
+    = Available signatures:
+      (<F1>, data int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[] real, vector, vector, array[] real,
+       array[] real, data array[,] real) => matrix
+        The 16th argument must be data-only.
+        (Local variables are assumed to depend on parameters; same goes for
+        function inputs unless they are marked with the keyword "data".)
+      (<F1>, data int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[] real, vector, vector, array[] real,
+       array[,] real, data array[,] real) => matrix
+        The 15th argument must be array[,] real but got array[] real
+      (<F1>, data int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[] real, vector, vector, data real, data real,
+       data real) => matrix
+        The 14th argument must be real but got array[] real
+      (<F1>, data int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[] real, vector, vector, array[,] real,
+       array[] real, data array[,] real) => matrix
+        The 14th argument must be array[,] real but got array[] real
+      (<F1>, data int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[] real, vector, vector, array[,] real,
+       array[,] real, data array[,] real) => matrix
+        The 14th argument must be array[,] real but got array[] real
+      (Additional signatures omitted)

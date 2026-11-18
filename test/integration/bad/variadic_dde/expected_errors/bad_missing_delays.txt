@@ -1,0 +1,18 @@
+/* $ stanc ../bad_missing_delays.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "dde_rk45".
+    ┌─ ../bad_missing_delays.stan:18:62
+  1 │  functions {
+  2 │    vector delayed_decay(real t, vector y, matrix y_lag) {
+    │           ------------- Callback defined here.
+  3 │      return -y_lag[ : , 1];
+    ⋯  
+ 17 │  transformed parameters {
+ 18 │    array[4] vector[2] y_hat = dde_rk45(delayed_decay, y0, t0, ts);
+    │                                                               ^^ Function called here.
+ 19 │  }
+    = Supplied arguments:
+      (<F1>, vector, real, array[] real)
+      where F1 = (real, vector, matrix) => vector
+    = Available signatures:
+      (<F1>, vector, data real, data array[] real, vector) => vector
+        Expected 5 arguments but found 4 arguments.

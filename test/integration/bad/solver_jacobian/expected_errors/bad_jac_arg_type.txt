@@ -1,0 +1,28 @@
+/* $ stanc ../bad_jac_arg_type.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "ode_rk45".
+    ┌─ ../bad_jac_arg_type.stan:18:46
+  1 │  functions {
+  2 │    vector decay(real t, vector y, vector k) {
+    │           ----- Callback defined here.
+  3 │      return -k .* y;
+    ⋯  
+ 17 │  transformed parameters {
+ 18 │    array[4] vector[2] y_hat = ode_rk45(decay, decay_jac, y0, t0, ts, k);
+    │                                               ^^^^^^^^^ Function called here.
+ 19 │  }
+    = Supplied arguments:
+      (<F1>, <F2>, vector, real, array[] real, vector)
+      where F1 = (real, vector, vector) => vector
+            F2 = (real, vector, array[] real) => matrix
+    = Available signatures:
+      (<F1>, <F3>, vector, real, array[] real, vector) => vector
+      where F3 = (real, vector, vector) => matrix
+        The second argument must be
+         (real, vector, vector) => matrix
+        but got
+         (real, vector, array[] real) => matrix
+        These are not compatible because:
+          The types for the third argument are incompatible: one is
+           array[] real
+          but the other is
+           vector

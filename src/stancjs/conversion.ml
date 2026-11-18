@@ -1,6 +1,12 @@
-open Core
+open Std
 open Frontend
 open Js_of_ocaml
+
+let throw_error s =
+  new%js Js.error_constr (Js.string s) |> Js_error.of_error |> Js_error.raise_
+
+let res_or_throw (e : ('a, string) Result.t) : 'a =
+  match e with Ok r -> r | Error s -> throw_error s
 
 let typecheck e typ = String.equal (Js.to_string (Js.typeof e)) typ
 
@@ -12,12 +18,12 @@ let bad_arg_message ~name ~expected value =
     (Js.typeof value |> Js.to_string)
     expected
 
-let checked_to_string ~name value =
+let checked_to_string ~name (value : 'a Js.t) =
   if not (typecheck value "string") then
     Error (bad_arg_message ~name ~expected:"string" value)
-  else Ok (Js.to_string value)
+  else Ok (Js.to_string (Js.Unsafe.coerce value))
 
-let checked_to_array ~name value =
+let checked_to_array ~name (value : 'a Js.t) =
   let is_array a = Js.Unsafe.global##._Array##isArray a |> Js.to_bool in
   if not (is_array value) then
     Error
@@ -26,10 +32,11 @@ let checked_to_array ~name value =
           false for value of type '%s'."
          name
          (Js.typeof value |> Js.to_string))
-  else Ok (Js.to_array value)
+  else Ok (Js.to_array (Js.Unsafe.coerce value))
 
-let get_includes_lenient includes : string String.Map.t * string list =
-  let open Common.Let_syntax.Result in
+let get_includes_lenient includes :
+    string String.Map.t * Frontend.Warnings.t list =
+  let open Result.Syntax in
   let map, warnings =
     match Js.Opt.to_option includes with
     | None -> (String.Map.empty, [] (* normal use: argument not supplied *))
@@ -37,7 +44,7 @@ let get_includes_lenient includes : string String.Map.t * string list =
         ( String.Map.empty
         , [bad_arg_message ~name:"includes" ~expected:"object" includes] )
     | Some includes ->
-        let keys = Js.object_keys includes |> Js.to_array |> List.of_array in
+        let keys = Js.object_keys includes |> Js.to_array |> Array.to_list in
         let lookup k =
           let value_js = Js.Unsafe.get includes k in
           let k_str = Js.to_string k in
@@ -45,23 +52,26 @@ let get_includes_lenient includes : string String.Map.t * string list =
             checked_to_string ~name:("includes[\"" ^ k_str ^ "\"]") value_js
           in
           (k_str, value_str) in
-        let alist, warnings = List.map keys ~f:lookup |> List.partition_result in
+        let alist, warnings =
+          List.map keys ~f:lookup |> List.partition_map ~f:Result.to_either
+        in
         ( (* JS objects cannot have duplicate keys *)
-          String.Map.of_alist_exn alist
+          String.Map.of_list alist
         , warnings ) in
-  ( map
-  , List.map
-      ~f:
-        (Fmt.str
-           "@[<v>Warning: stanc.js failed to parse included file mapping:@ %s@]")
-      warnings )
+  (map, List.map ~f:Frontend.Warnings.stancjs_bad_include warnings)
+
+let get_includes includes =
+  let includes, include_reader_warnings = get_includes_lenient includes in
+  List.iter include_reader_warnings ~f:(fun d ->
+      Fmt.str "%a" (fun ppf -> Warnings.pp ppf) d |> throw_error);
+  includes
 
 type flags =
   {name: string; code: string; driver_flags: Driver.Flags.t; color_output: bool}
 
 let process_flags name code (flags : 'a Js.opt) includes :
     (flags, string) result =
-  let open Common.Let_syntax.Result in
+  let open Result.Syntax in
   let* name = checked_to_string ~name:"name" name in
   let* code = checked_to_string ~name:"code" code in
   let+ flags =
@@ -70,10 +80,10 @@ let process_flags name code (flags : 'a Js.opt) includes :
     | Some flags ->
         let* flags_array = checked_to_array ~name:"flags" flags in
         let+ ocaml_flags =
-          let open Result in
           Array.mapi flags_array ~f:(fun i v ->
-              checked_to_string ~name:("flags[" ^ string_of_int i ^ "]") v)
-          |> Array.to_list |> Result.all >>| Array.of_list in
+              checked_to_string ~name:("flags[" ^ Int.to_string i ^ "]") v)
+          |> Array.to_list |> Result.all
+          |> Result.map ~f:Array.of_list in
         Driver.Flags.set_backend_args_list
           (ocaml_flags |> Array.to_list |> List.map ~f:(fun o -> "--" ^ o));
         Some ocaml_flags in
@@ -86,10 +96,16 @@ let process_flags name code (flags : 'a Js.opt) includes :
             include_source= Include_files.InMemory includes }
       ; color_output= false }
   | Some flags ->
-      let is_flag_set flag = Array.mem ~equal:String.equal flags flag in
+      let is_flag_set flag = Array.mem ~set:flags flag in
       let flag_val flag =
         let prefix = flag ^ "=" in
         Array.find_map flags ~f:(String.chop_prefix ~prefix) in
+      let optimization_overrides =
+        let override flag =
+          Option.bind (String.chop_prefix ~prefix:"f" flag) ~f:(fun name ->
+              List.assoc_opt name
+                Analysis_and_optimization.Optimize.optimization_flags) in
+        Array.to_list flags |> List.filter_map ~f:override in
       { name
       ; code
       ; driver_flags=
@@ -125,8 +141,9 @@ let process_flags name code (flags : 'a Js.opt) includes :
                    else if is_flag_set "debug-optimized-mir-pretty" then Pretty
                    else Off)
               ; print_mem_patterns= is_flag_set "debug-mem-patterns"
-              ; force_soa= None
+              ; optimization_overrides
               ; print_lir= is_flag_set "debug-lir"
+              ; debug_print_factor_graph= is_flag_set "debug-print-factor-graph"
               ; debug_generate_data= is_flag_set "debug-generate-data"
               ; debug_generate_inits= is_flag_set "debug-generate-inits"
               ; debug_data_json=
@@ -134,7 +151,7 @@ let process_flags name code (flags : 'a Js.opt) includes :
                   |> Option.map ~f:(fun s -> ("debug-data-json", s)) }
           ; line_length=
               flag_val "max-line-length"
-              |> Option.map ~f:int_of_string
+              |> Option.map ~f:Int.of_string
               |> Option.value ~default:78
           ; canonicalizer_settings=
               (if is_flag_set "print-canonical" then Canonicalize.legacy
@@ -143,7 +160,7 @@ let process_flags name code (flags : 'a Js.opt) includes :
                  | None -> Canonicalize.none
                  | Some s ->
                      let parse settings s =
-                       match String.lowercase s with
+                       match String.lowercase_ascii s with
                        | "deprecations" ->
                            Canonicalize.{settings with deprecations= true}
                        | "parentheses" -> {settings with parentheses= true}
@@ -151,8 +168,8 @@ let process_flags name code (flags : 'a Js.opt) includes :
                        | "strip-comments" -> {settings with strip_comments= true}
                        | "includes" -> {settings with inline_includes= true}
                        | _ -> settings in
-                     List.fold ~f:parse ~init:Canonicalize.none
-                       (String.split ~on:',' s))
+                     List.fold_left ~f:parse ~init:Canonicalize.none
+                       (String.split_all ~sep:"," s))
           ; warn_pedantic= is_flag_set "warn-pedantic"
           ; warn_uninitialized= is_flag_set "warn-uninitialized"
           ; filename_in_msg= flag_val "filename-in-msg" }
@@ -175,10 +192,15 @@ class type stancReturn = object
   method warnings : Js.js_string Js.t Js.js_array Js.t Js.readonly_prop
 end
 
-let js_of_warnings warnings =
-  warnings |> List.map ~f:Js.string |> Array.of_list |> Js.array
+let js_of_warnings ?printed_filename ?code ~color_output warnings =
+  let js_of_warning w =
+    Js.string
+      (str_color ~color_output "%a"
+         (Frontend.Warnings.pp ?printed_filename ?code)
+         w) in
+  warnings |> List.map ~f:js_of_warning |> Array.of_list |> Js.array
 
-let wrap_error ~warnings e =
+let wrap_error ?printed_filename ?code ~color_output ~warnings e =
   (* NB: The "0" entry is due to a historical mistake that led the first entry
      always being a 0 (this element is a 'tag' used by jsoo internally, but was
      not meant to be exposed to the user). For backward compatibility with
@@ -187,7 +209,7 @@ let wrap_error ~warnings e =
   object%js
     val result = Js.undefined [@@optdef]
     val errors = Js.def errors [@@optdef]
-    val warnings = js_of_warnings warnings
+    val warnings = js_of_warnings ?printed_filename ?code ~color_output warnings
   end
 
 let wrap_result ?printed_filename ~code ~color_output ~warnings res =
@@ -196,9 +218,33 @@ let wrap_result ?printed_filename ~code ~color_output ~warnings res =
       object%js
         val result = Js.def (Js.string s) [@@optdef]
         val errors = Js.undefined [@@optdef]
-        val warnings = js_of_warnings warnings
+
+        val warnings =
+          js_of_warnings ?printed_filename ~code ~color_output warnings
       end
   | Error e ->
       let e =
         str_color ~color_output "%a" (Errors.pp ?printed_filename ~code) e in
-      wrap_error ~warnings e
+      wrap_error ?printed_filename ~code ~color_output ~warnings e
+
+(* structured outputs from newer entrypoints *)
+
+let rec js_of_yojson (t : Yojson.Basic.t) : Js.Unsafe.any =
+  match t with
+  | `Null -> Js.Unsafe.pure_js_expr "null"
+  | `Int i -> i |> Js.Unsafe.inject
+  | `Bool b -> Js.bool b |> Js.Unsafe.coerce
+  | `Float f -> Js.float f |> Js.Unsafe.coerce
+  | `String s -> Js.string s |> Js.Unsafe.coerce
+  | `List l ->
+      List.map ~f:js_of_yojson l |> Array.of_list |> Js.array
+      |> Js.Unsafe.coerce
+  | `Assoc kvs ->
+      let kvs =
+        List.map ~f:(fun (k, v) -> (k, js_of_yojson v)) kvs |> Array.of_list
+      in
+      Js.Unsafe.obj kvs
+
+let json_of_diagnostics diags : 'a Js.t Js.js_array Js.t =
+  let js_of_diagnostic d = js_of_yojson (Grace_json_conv.json_of_diagnostic d) in
+  List.map ~f:js_of_diagnostic diags |> Array.of_list |> Js.array

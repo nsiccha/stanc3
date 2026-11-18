@@ -1,0 +1,19 @@
+/* $ stanc ../bad_dde_check_lag_type.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "dde_jacobian_error".
+    ┌─ ../bad_dde_check_lag_type.stan:18:63
+  1 │  functions {
+  2 │    vector delayed(real t, vector y, matrix y_lag, vector k) {
+    │           ------- Callback defined here.
+  3 │      return -k .* y_lag[ : , 1];
+    ⋯  
+ 17 │    // y_lag is a matrix with one column per delay
+ 18 │    real err = dde_jacobian_error(delayed, delayed_jac, t0, y0, y0, k);
+    │                                                                ^^ Function called here.
+ 19 │  }
+    = Supplied arguments:
+      (<F1>, <F2>, real, vector, vector, vector)
+      where F1 = (real, vector, matrix, vector) => vector
+            F2 = (real, vector, matrix, vector) => matrix
+    = Available signatures:
+      (<F1>, <F2>, real, vector, matrix, vector) => vector
+        The 5th argument must be matrix but got vector
