@@ -1,0 +1,52 @@
+/* $ stanc ../bad_jac_group_solver.stan : [exit 1] */
+error: Ill-typed arguments supplied to function "pmx_solve_group_rk45".
+    ┌─ ../bad_jac_group_solver.stan:29:21
+  1 │  functions {
+  2 │    vector rhs(real t, vector y, array[] real theta, data array[] real x_r,
+    │           --- Callback defined here.
+  3 │              data array[] int x_i) {
+  4 │      return -theta[1] * y;
+  5 │    }
+  6 │    matrix rhs_jac(real t, vector y, array[] real theta, data array[] real x_r,
+    │           ------- Callback defined here.
+  7 │                   data array[] int x_i) {
+    ⋯  
+ 28 │  transformed parameters {
+ 29 │    matrix[1, nt] x = pmx_solve_group_rk45(rhs, rhs_jac, 1, {nt}, time, amt, rate, ii, evid, cmt, addl, ss, theta_t);
+    │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Function called here.
+ 30 │  }
+    = Supplied arguments:
+      (<F1>, <F2>, int, array[] int, array[] real, array[] real,
+       array[] real, array[] real, array[] int, array[] int, array[] int,
+       array[] int, array[,] real)
+      where F1 = (real, vector, array[] real, data array[] real,
+                  data array[] int) => vector
+            F2 = (real, vector, array[] real, data array[] real,
+                  data array[] int) => matrix
+    = Available signatures:
+      (<F1>, data int, array[] int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[,] real, array[,] real) => matrix
+        The second argument must be int but got <F2>
+      (<F1>, data int, array[] int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[,] real, data real, data real, data real,
+       data real, data real, data real) => matrix
+        Expected 18 arguments but found 13 arguments.
+      (<F1>, data int, array[] int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[,] real, array[,] real, data real, data real,
+       data real, data real, data real, data real) => matrix
+        Expected 19 arguments but found 13 arguments.
+      (<F1>, data int, array[] int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[,] real, array[,] real, array[,] real,
+       data real, data real, data real, data real, data real, data real) => matrix
+        Expected 20 arguments but found 13 arguments.
+      (<F1>, data int, array[] int, array[] real, array[] real, array[] real,
+       array[] real, data array[] int, data array[] int, data array[] int,
+       data array[] int, array[,] real, array[,] real, array[,] real,
+       data array[,] real, data real, data real, data real, data real,
+       data real, data real) => matrix
+        Expected 21 arguments but found 13 arguments.
+      (Additional signatures omitted)
