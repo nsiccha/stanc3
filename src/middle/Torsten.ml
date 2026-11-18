@@ -125,8 +125,29 @@ let pmx_solve_rhs rhs add_func name args_list =
     (rhs @ pmx_ncmt_arg @ pmx_event_args)
     args_list
 
+(* the Jacobian [jac] of the right-hand side [rhs]: a function taking [rhs]'s
+   arguments and returning a matrix, ODE [df/dy | df/dtheta | df/dx_r], DDE
+   [df/dy | df/dy_lag per delay | df/dtheta | df/dx_r] (layouts in
+   torsten_math's dsolve/pmx_user_jacobian.hpp) *)
+let pmx_jacobian_of rhs =
+  List.map rhs ~f:(function
+    | autodiff, UnsizedType.UFun (args, _, suffix, mem_pattern) ->
+        ( autodiff
+        , UnsizedType.UFun (args, ReturnType UMatrix, suffix, mem_pattern) )
+    | _ ->
+        Common.ICE.internal_compiler_error
+          [%message "Torsten: right-hand side is not a function"])
+
+(* every overload of [pmx_solve_rhs rhs] twice: as is, and with [rhs]'s Jacobian
+   right after it, [name(f, jac, nCmt, ...)]. The Jacobian overloads are added
+   first: error messages list the last-added of equally close signatures first,
+   so the listings for calls without [jac] stay as they were. *)
+let pmx_solve_rhs_with_jacobian rhs add_func name args_list =
+  pmx_solve_rhs (rhs @ pmx_jacobian_of rhs) add_func name args_list;
+  pmx_solve_rhs rhs add_func name args_list
+
 let pmx_solve add_func name args_list =
-  pmx_solve_rhs pmx_solve_ode_func add_func name args_list
+  pmx_solve_rhs_with_jacobian pmx_solve_ode_func add_func name args_list
 
 let pmx_solve_coupled add_func name args_list =
   pmx_solve_rhs pmx_coupled_ode_func add_func name args_list
@@ -209,7 +230,7 @@ let add_torsten_qualified add_func =
   let sol_names =
     List.map ~f:(fun sol -> "pmx_solve_" ^ sol) ["adams"; "bdf"; "rk45"] in
   List.iter ~f:(fun sol -> pmx_solve add_func sol pmx_solve_args) sol_names;
-  pmx_solve_rhs pmx_solve_dde_func add_func "pmx_solve_dde_rk45"
+  pmx_solve_rhs_with_jacobian pmx_solve_dde_func add_func "pmx_solve_dde_rk45"
     pmx_solve_dde_args;
   let sol_names =
     List.map ~f:(fun sol -> "pmx_solve_group_" ^ sol) ["adams"; "bdf"; "rk45"]
