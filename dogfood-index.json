@@ -3,14 +3,14 @@
   "line": {
     "repo": "nsiccha/stanc3",
     "ref": "dogfood",
-    "sha": "cb8f48aca7ea216a4b9ec0bfc776ce0b750a04a6"
+    "sha": "e00a38e8296bb1cef934ae04cbbfe2982e7f92ee"
   },
   "upstream": {
     "repo": "stan-dev/stanc3",
     "ref": "v2.39.0",
     "sha": "739471362446086911f1d6472c19ae0749c366ea"
   },
-  "prepared_at": "2026-11-18T11:52:22Z",
+  "prepared_at": "2026-11-18T14:19:10Z",
   "problems": [
     {
       "id": "variadic-dde-signatures",
@@ -51,7 +51,16 @@
             "test/integration/good/code-gen/dde",
             "test/integration/good/dde_good.stan"
           ],
-          "detail": "The compiler built from 40f93f345a16f7c7c46c24a9c3ab103224853583 has the same Git source tree as dogfood. It matched the 13 error diagnostics and exit codes and the generated C++ snapshot, and translated the valid model. Release name and version were substituted in the snapshot. These checks exercise the compiler only."
+          "detail": "The compiler built from 40f93f345a16f7c7c46c24a9c3ab103224853583 has the same Git source tree as the original dogfood tip cb8f48aca7ea216a4b9ec0bfc776ce0b750a04a6. It matched the 13 error diagnostics and exit codes and the generated C++ snapshot, and translated the valid model. Release name and version were substituted in the snapshot. These checks exercise the compiler only."
+        },
+        {
+          "base": "739471362446086911f1d6472c19ae0749c366ea",
+          "native_build": "stanc3 e00a38e8296bb1cef934ae04cbbfe2982e7f92ee (OCaml 4.14.1, Dune 3.23.1)",
+          "tests": [
+            "dune runtest -j 1"
+          ],
+          "result": "passed",
+          "detail": "The full compiler test suite passed on the combined Torsten and solver-Jacobian tree."
         }
       ]
     },
@@ -115,7 +124,77 @@
             "test/integration/good/torsten",
             "test/integration/signatures/stan_math_signatures.t"
           ],
-          "detail": "The compiler built from 40f93f345a16f7c7c46c24a9c3ab103224853583 has the same Git source tree as dogfood. It matched seven error diagnostics and exit codes, the generated C++ snapshot and 90 DDE overloads, and translated all 14 valid Torsten models. Release name and version were substituted in the snapshot. These checks exercise the compiler only."
+          "detail": "The compiler built from 40f93f345a16f7c7c46c24a9c3ab103224853583 has the same Git source tree as the original dogfood tip cb8f48aca7ea216a4b9ec0bfc776ce0b750a04a6. It matched seven error diagnostics and exit codes, the generated C++ snapshot and 90 DDE overloads, and translated all 14 valid Torsten models. Release name and version were substituted in the snapshot. These checks exercise the compiler only."
+        },
+        {
+          "base": "739471362446086911f1d6472c19ae0749c366ea",
+          "native_build": "stanc3 e00a38e8296bb1cef934ae04cbbfe2982e7f92ee (OCaml 4.14.1, Dune 3.23.1)",
+          "tests": [
+            "dune runtest -j 1"
+          ],
+          "result": "passed",
+          "detail": "The full compiler test suite passed on the combined Torsten and solver-Jacobian tree."
+        },
+        {
+          "base": "739471362446086911f1d6472c19ae0749c366ea",
+          "native_build": "BridgeStan 2.9.0 with nsiccha/math 5ee1551154db14debb2c137663fcdfd6fe800c87",
+          "tests": [
+            "test/integration/good/code-gen/torsten_dde/pmx_dde_test_model.stan"
+          ],
+          "result": "passed",
+          "detail": "The compiler built from e00a38e8296bb1cef934ae04cbbfe2982e7f92ee translated this model to C++. GCC accepted the generated translation unit using C++17 and the combined Stan Math and Torsten headers, in a syntax-only compile."
+        }
+      ]
+    },
+    {
+      "id": "solver-jacobian-signatures",
+      "role": "shared",
+      "title": "Pass an analytic Jacobian to Stan ODE, DAE and delay solvers",
+      "summary": "Models can pass a second function returning a Jacobian matrix and use ode_jacobian_error, dae_jacobian_error or dde_jacobian_error to compare it with autodiff. stanc3 checks the two function signatures and emits both C++ functors.",
+      "repairs": [],
+      "upstream_refs": [],
+      "fix": {
+        "branch": "dde-solver",
+        "commits": [
+          {
+            "sha": "b62f2ed306b833f41e8c9801cd5ad0f20a9785be",
+            "title": "Add solver overloads taking a Jacobian UDF and *_jacobian_error checks",
+            "original": [
+              "b62f2ed306b833f41e8c9801cd5ad0f20a9785be"
+            ]
+          }
+        ],
+        "why_together": "One compiler commit adds overload selection, type checking, C++ code generation and the corresponding positive and negative tests. The DDE overloads extend the variadic delay solver signatures already on this line."
+      },
+      "depends_on": [
+        "variadic-dde-signatures"
+      ],
+      "requires": [
+        {
+          "name": "Stan Math analytic Jacobian overloads",
+          "repo": "nsiccha/math",
+          "sha": "e0598fb77254c70d781d69e930e0b17cfa02d570",
+          "why": "The generated calls need the two-functor ODE, DAE and DDE overloads and the three Jacobian-check functions. The public Stan Math dogfood commit 5ee1551154db14debb2c137663fcdfd6fe800c87 contains these implementations."
+        }
+      ],
+      "validation": [
+        {
+          "base": "739471362446086911f1d6472c19ae0749c366ea",
+          "native_build": "stanc3 e00a38e8296bb1cef934ae04cbbfe2982e7f92ee (OCaml 4.14.1, Dune 3.23.1)",
+          "tests": [
+            "dune runtest -j 1"
+          ],
+          "result": "passed",
+          "detail": "The full compiler test suite passed on the combined Torsten and solver-Jacobian tree."
+        },
+        {
+          "base": "739471362446086911f1d6472c19ae0749c366ea",
+          "native_build": "BridgeStan 2.9.0 with nsiccha/math 5ee1551154db14debb2c137663fcdfd6fe800c87",
+          "tests": [
+            "test/integration/good/code-gen/solver_jacobian/solver_jacobian_test_model.stan"
+          ],
+          "result": "passed",
+          "detail": "The compiler built from e00a38e8296bb1cef934ae04cbbfe2982e7f92ee translated this model to C++. GCC accepted the generated translation unit using C++17 and the combined Stan Math and Torsten headers, in a syntax-only compile."
         }
       ]
     }
