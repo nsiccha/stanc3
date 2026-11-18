@@ -18,12 +18,25 @@ val get_stan_math_signatures_alist :
 val is_stan_math_variadic_function_name : string -> bool
 (** Test if a string names a built-in variadic function
 
-    Note that these function names cannot be overloaded, and usually require
-    customized code-gen in the backend. *)
+    Note that these function names cannot be overloaded by user-defined
+    functions, and usually require customized code-gen in the backend. *)
 
 val lookup_stan_math_variadic_function :
-  string -> UnsizedType.variadic_signature option
-(** Look up the signature of a built-in variadic function *)
+  string -> UnsizedType.variadic_signature list
+(** Look up the signatures of a built-in variadic function. If it is not found,
+    this returns [[]]. A name has several signatures only when they differ in
+    the number of leading function arguments (see
+    [variadic_function_arg_count]); all of them share [return_type],
+    [required_fn_args] and [required_fn_rt]. *)
+
+val variadic_function_arg_count : UnsizedType.variadic_signature -> int
+(** The number of leading function arguments of a variadic signature: 1 for [f],
+    2 for [f] followed by its Jacobian [jac] *)
+
+val find_stan_math_variadic_function :
+  string -> function_args:int -> UnsizedType.variadic_signature option
+(** The signature of a built-in variadic function with the given number of
+    leading function arguments, if there is one *)
 
 (** Pretty printers *)
 
