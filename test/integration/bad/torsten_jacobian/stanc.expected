@@ -1,0 +1,472 @@
+  $ ../../../../../install/default/bin/stanc bad_dde_jac_without_lag.stan
+Semantic error in 'bad_dde_jac_without_lag.stan', line 29, column 20 to column 125:
+   -------------------------------------------------
+    27:  }
+    28:  transformed parameters {
+    29:    matrix[1, nt] x = pmx_solve_dde_rk45(delayed, delayed_jac, 1, time, amt, rate, ii, evid, cmt, addl, ss, theta, tau, y_hist);
+                             ^
+    30:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_dde_rk45":
+(<F1>, <F2>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real, vector,
+ vector)
+where F1 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => vector
+      F2 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, vector, vector, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, vector, vector, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, <F3>, data int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real, vector, vector) => matrix
+where F3 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => matrix
+  The second argument must be
+   (real, vector, matrix, array[] real, data array[] real, data array[] int) => matrix
+  but got
+   (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  These are not compatible because:
+    One takes 5 arguments but the other takes 6 arguments.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_after_ncmt.stan
+Semantic error in 'bad_jac_after_ncmt.stan', line 29, column 20 to column 100:
+   -------------------------------------------------
+    27:  }
+    28:  transformed parameters {
+    29:    matrix[1, nt] x = pmx_solve_rk45(rhs, 1, rhs_jac, time, amt, rate, ii, evid, cmt, addl, ss, theta);
+                             ^
+    30:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_rk45":
+(<F1>, int, <F2>, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real)
+where F1 = (real, vector, array[] real, data array[] real, data array[] int) => vector
+      F2 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[] real) => matrix
+  The third argument must be array[] real but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[] real) => matrix
+  The third argument must be array[] real but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real) => matrix
+  The third argument must be array[] real but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[,] real) => matrix
+  The third argument must be array[] real but got <F2>
+(<F1>, <F2>, data int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real) => matrix
+  The second argument must be <F2> but got int
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_arg_type.stan
+Semantic error in 'bad_jac_arg_type.stan', line 29, column 20 to column 100:
+   -------------------------------------------------
+    27:  }
+    28:  transformed parameters {
+    29:    matrix[1, nt] x = pmx_solve_rk45(rhs, rhs_jac, 1, time, amt, rate, ii, evid, cmt, addl, ss, theta);
+                             ^
+    30:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_rk45":
+(<F1>, <F2>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real)
+where F1 = (real, vector, array[] real, data array[] real, data array[] int) => vector
+      F2 = (real, vector, vector, data array[] real, data array[] int) => matrix
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, <F3>, data int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real) => matrix
+where F3 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  The second argument must be
+   (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  but got
+   (real, vector, vector, data array[] real, data array[] int) => matrix
+  These are not compatible because:
+    The types for the third argument are incompatible: one is
+     vector
+    but the other is
+     array[] real
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_coupled_solver.stan
+Semantic error in 'bad_jac_coupled_solver.stan', line 29, column 20 to column 107:
+   -------------------------------------------------
+    27:  }
+    28:  transformed parameters {
+    29:    matrix[1, nt] x = pmx_solve_onecpt_rk45(rhs, rhs_jac, 1, time, amt, rate, ii, evid, cmt, addl, ss, theta);
+                             ^
+    30:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_onecpt_rk45":
+(<F1>, <F2>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real)
+where F1 = (real, vector, array[] real, data array[] real, data array[] int) => vector
+      F2 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+Available signatures:
+(<F3>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real, array[,] real, data real, data real,
+ data real, data real, data real, data real) => matrix
+where F3 = (real, vector, vector, array[] real, data array[] real,
+            data array[] int) => vector
+  Expected 19 arguments but found 12 arguments.
+(<F3>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[] real, array[] real, data real, data real, data real,
+ data real, data real, data real) => matrix
+  Expected 19 arguments but found 12 arguments.
+(<F3>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real, array[,] real, data real, data real, data real) => matrix
+  Expected 16 arguments but found 12 arguments.
+(<F3>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[] real, array[] real, data real, data real, data real) => matrix
+  Expected 16 arguments but found 12 arguments.
+(<F3>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real, array[,] real) => matrix
+  Expected 13 arguments but found 12 arguments.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_data_theta.stan
+Semantic error in 'bad_jac_data_theta.stan', line 29, column 20 to column 100:
+   -------------------------------------------------
+    27:  }
+    28:  transformed parameters {
+    29:    matrix[1, nt] x = pmx_solve_rk45(rhs, rhs_jac, 1, time, amt, rate, ii, evid, cmt, addl, ss, theta);
+                             ^
+    30:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_rk45":
+(<F1>, <F2>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real)
+where F1 = (real, vector, array[] real, data array[] real, data array[] int) => vector
+      F2 = (real, vector, data array[] real, data array[] real,
+            data array[] int) => matrix
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, <F3>, data int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real) => matrix
+where F3 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  The second argument must be
+   (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  but got
+   (real, vector, data array[] real, data array[] real, data array[] int) => matrix
+  These are not compatible because:
+    The third argument has an incompatible data-qualifier.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_fewer_args.stan
+Semantic error in 'bad_jac_fewer_args.stan', line 28, column 20 to column 101:
+   -------------------------------------------------
+    26:  }
+    27:  transformed parameters {
+    28:    matrix[1, nt] x = pmx_solve_adams(rhs, rhs_jac, 1, time, amt, rate, ii, evid, cmt, addl, ss, theta);
+                             ^
+    29:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_adams":
+(<F1>, <F2>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real)
+where F1 = (real, vector, array[] real, data array[] real, data array[] int) => vector
+      F2 = (real, vector, array[] real, data array[] real) => matrix
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, <F3>, data int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real) => matrix
+where F3 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  The second argument must be
+   (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  but got
+   (real, vector, array[] real, data array[] real) => matrix
+  These are not compatible because:
+    One takes 4 arguments but the other takes 5 arguments.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_group_solver.stan
+Semantic error in 'bad_jac_group_solver.stan', line 29, column 20 to column 114:
+   -------------------------------------------------
+    27:  }
+    28:  transformed parameters {
+    29:    matrix[1, nt] x = pmx_solve_group_rk45(rhs, rhs_jac, 1, {nt}, time, amt, rate, ii, evid, cmt, addl, ss, theta_t);
+                             ^
+    30:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_group_rk45":
+(<F1>, <F2>, int, array[] int, array[] real, array[] real, array[] real,
+ array[] real, array[] int, array[] int, array[] int, array[] int,
+ array[,] real)
+where F1 = (real, vector, array[] real, data array[] real, data array[] int) => vector
+      F2 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+Available signatures:
+(<F1>, data int, array[] int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real, data real, data real, data real, data real,
+ data real, data real) => matrix
+  Expected 18 arguments but found 13 arguments.
+(<F1>, data int, array[] int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real, array[,] real, data real, data real,
+ data real, data real, data real, data real) => matrix
+  Expected 19 arguments but found 13 arguments.
+(<F1>, data int, array[] int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real, array[,] real, array[,] real, data real,
+ data real, data real, data real, data real, data real) => matrix
+  Expected 20 arguments but found 13 arguments.
+(<F1>, data int, array[] int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real, array[,] real, array[,] real,
+ data array[,] real, data real, data real, data real, data real, data real,
+ data real) => matrix
+  Expected 21 arguments but found 13 arguments.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_not_function.stan
+Semantic error in 'bad_jac_not_function.stan', line 25, column 20 to column 98:
+   -------------------------------------------------
+    23:  }
+    24:  transformed parameters {
+    25:    matrix[1, nt] x = pmx_solve_rk45(rhs, theta, 1, time, amt, rate, ii, evid, cmt, addl, ss, theta);
+                             ^
+    26:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_rk45":
+(<F1>, array[] real, int, array[] real, array[] real, array[] real,
+ array[] real, array[] int, array[] int, array[] int, array[] int,
+ array[] real)
+where F1 = (real, vector, array[] real, data array[] real, data array[] int) => vector
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[] real) => matrix
+  The second argument must be int but got array[] real
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[] real) => matrix
+  The second argument must be int but got array[] real
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real) => matrix
+  The second argument must be int but got array[] real
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[,] real) => matrix
+  The second argument must be int but got array[] real
+(<F1>, <F2>, data int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real) => matrix
+where F2 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  The second argument must be <F2> but got array[] real
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_return_type.stan
+Semantic error in 'bad_jac_return_type.stan', line 29, column 20 to column 99:
+   -------------------------------------------------
+    27:  }
+    28:  transformed parameters {
+    29:    matrix[1, nt] x = pmx_solve_bdf(rhs, rhs_jac, 1, time, amt, rate, ii, evid, cmt, addl, ss, theta);
+                             ^
+    30:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_bdf":
+(<F1>, <F1>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real)
+where F1 = (real, vector, array[] real, data array[] real, data array[] int) => vector
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[] real) => matrix
+  The second argument must be int but got <F1>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[] real) => matrix
+  The second argument must be int but got <F1>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real) => matrix
+  The second argument must be int but got <F1>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[,] real) => matrix
+  The second argument must be int but got <F1>
+(<F1>, <F2>, data int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real) => matrix
+where F2 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  The second argument must be
+   (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  but got
+   (real, vector, array[] real, data array[] real, data array[] int) => vector
+  The return types are not compatible.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_jac_rng.stan
+Semantic error in 'bad_jac_rng.stan', line 29, column 20 to column 104:
+   -------------------------------------------------
+    27:  }
+    28:  transformed parameters {
+    29:    matrix[1, nt] x = pmx_solve_rk45(rhs, rhs_jac_rng, 1, time, amt, rate, ii, evid, cmt, addl, ss, theta);
+                             ^
+    30:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_rk45":
+(<F1>, <F2>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real)
+where F1 = (real, vector, array[] real, data array[] real, data array[] int) => vector
+      F2 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, <F3>, data int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real) => matrix
+where F3 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  The second argument must be a pure function but got an rng function. These function types are not compatible.
+(Additional signatures omitted)
+[exit 1]
+  $ ../../../../../install/default/bin/stanc bad_ode_jac_with_lag.stan
+Semantic error in 'bad_ode_jac_with_lag.stan', line 29, column 20 to column 100:
+   -------------------------------------------------
+    27:  }
+    28:  transformed parameters {
+    29:    matrix[1, nt] x = pmx_solve_rk45(rhs, rhs_jac, 1, time, amt, rate, ii, evid, cmt, addl, ss, theta);
+                             ^
+    30:  }
+   -------------------------------------------------
+
+Ill-typed arguments supplied to function "pmx_solve_rk45":
+(<F1>, <F2>, int, array[] real, array[] real, array[] real, array[] real,
+ array[] int, array[] int, array[] int, array[] int, array[] real)
+where F1 = (real, vector, array[] real, data array[] real, data array[] int) => vector
+      F2 = (real, vector, matrix, array[] real, data array[] real,
+            data array[] int) => matrix
+Available signatures:
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[,] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, data int, array[] real, array[] real, array[] real, array[] real,
+ data array[] int, data array[] int, data array[] int, data array[] int,
+ array[] real, array[,] real) => matrix
+  The second argument must be int but got <F2>
+(<F1>, <F3>, data int, array[] real, array[] real, array[] real,
+ array[] real, data array[] int, data array[] int, data array[] int,
+ data array[] int, array[,] real) => matrix
+where F3 = (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  The second argument must be
+   (real, vector, array[] real, data array[] real, data array[] int) => matrix
+  but got
+   (real, vector, matrix, array[] real, data array[] real, data array[] int) => matrix
+  These are not compatible because:
+    One takes 6 arguments but the other takes 5 arguments.
+(Additional signatures omitted)
+[exit 1]
