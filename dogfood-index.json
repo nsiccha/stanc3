@@ -3,14 +3,14 @@
   "line": {
     "repo": "nsiccha/stanc3",
     "ref": "dogfood",
-    "sha": "ed797847c9a438cda753e1909b0c2bd88a370544"
+    "sha": "76e540acae0652f2b1dbbb7763a98ce1c97f0da7"
   },
   "upstream": {
     "repo": "stan-dev/stanc3",
     "ref": "master",
-    "sha": "b10db6f6971a2476093d2746c02756bec26e6acc"
+    "sha": "456130a900c56ddb0505c4540460977106bd9938"
   },
-  "prepared_at": "2026-11-18T15:22:25Z",
+  "prepared_at": "2026-11-18T19:47:05Z",
   "problems": [
     {
       "id": "variadic-dde-signatures",
@@ -77,6 +77,16 @@
             "test/integration/good/code-gen/dde/dde_test_model.stan"
           ],
           "detail": "The full compiler suite passed on the master-based merge. GCC accepted C++ generated for this feature with Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and nsiccha/math 5ee1551154db14debb2c137663fcdfd6fe800c87, in a syntax-only C++17 compile. Eight Schools compiled against the same headers."
+        },
+        {
+          "base": "456130a900c56ddb0505c4540460977106bd9938",
+          "native_build": "stanc3 76e540acae0652f2b1dbbb7763a98ce1c97f0da7, OCaml 5.5.2, Dune 3.23.1",
+          "result": "passed",
+          "tests": [
+            "dune runtest --force",
+            "test/integration/good/code-gen/dde/dde_test_model.stan"
+          ],
+          "detail": "GCC syntax-checked the C++ emitted for this model against Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
         }
       ]
     },
@@ -175,6 +185,16 @@
             "test/integration/good/code-gen/torsten_dde/pmx_dde_test_model.stan"
           ],
           "detail": "The full compiler suite passed on the master-based merge. GCC accepted C++ generated for this feature with Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and nsiccha/math 5ee1551154db14debb2c137663fcdfd6fe800c87, in a syntax-only C++17 compile. Eight Schools compiled against the same headers."
+        },
+        {
+          "base": "456130a900c56ddb0505c4540460977106bd9938",
+          "native_build": "stanc3 76e540acae0652f2b1dbbb7763a98ce1c97f0da7, OCaml 5.5.2, Dune 3.23.1",
+          "result": "passed",
+          "tests": [
+            "dune runtest --force",
+            "test/integration/good/code-gen/torsten_dde/pmx_dde_test_model.stan"
+          ],
+          "detail": "GCC syntax-checked the C++ emitted for this model against Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
         }
       ]
     },
@@ -243,6 +263,93 @@
             "test/integration/good/code-gen/solver_jacobian/solver_jacobian_test_model.stan"
           ],
           "detail": "The full compiler suite passed on the master-based merge. GCC accepted C++ generated for this feature with Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and nsiccha/math 5ee1551154db14debb2c137663fcdfd6fe800c87, in a syntax-only C++17 compile. Eight Schools compiled against the same headers."
+        },
+        {
+          "base": "456130a900c56ddb0505c4540460977106bd9938",
+          "native_build": "stanc3 76e540acae0652f2b1dbbb7763a98ce1c97f0da7, OCaml 5.5.2, Dune 3.23.1",
+          "result": "passed",
+          "tests": [
+            "dune runtest --force",
+            "test/integration/good/code-gen/solver_jacobian/solver_jacobian_test_model.stan"
+          ],
+          "detail": "GCC syntax-checked the C++ emitted for this model against Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
+        },
+        {
+          "base": "739471362446086911f1d6472c19ae0749c366ea",
+          "native_build": "stanc3 e00a38e8296bb1cef934ae04cbbfe2982e7f92ee, OCaml 4.14.1, Dune 3.23.1",
+          "result": "passed",
+          "tests": [
+            "test/integration/good/code-gen/solver_jacobian/solver_jacobian_test_model.stan"
+          ],
+          "detail": "GCC syntax-checked C++ from this release-based compiler using BridgeStan 2.9.0's Stan headers and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
+        }
+      ]
+    },
+    {
+      "id": "torsten-solver-jacobian-signatures",
+      "role": "shared",
+      "title": "Supply an analytic Jacobian to Torsten event solvers",
+      "summary": "A Stan model can pass its Jacobian immediately after its right-hand side in pmx_solve_rk45, pmx_solve_bdf, pmx_solve_adams and pmx_solve_dde_rk45. The callback takes the same arguments as the right-hand side, including lagged states for DDEs, and returns a matrix.",
+      "repairs": [],
+      "upstream_refs": [],
+      "depends_on": [
+        "torsten-dde-signatures"
+      ],
+      "fix": {
+        "branch": "torsten-dde",
+        "commits": [
+          {
+            "sha": "81fad4985775f6f312ebcbb8a2eb75082cdcd846",
+            "title": "Add pmx_solve_rk45/bdf/adams/dde_rk45 overloads taking a Jacobian UDF",
+            "original": [
+              "81fad4985775f6f312ebcbb8a2eb75082cdcd846"
+            ]
+          }
+        ],
+        "why_together": "One commit extends the Torsten signature generator with 90 Jacobian variants per solver and adds positive, negative and C++ generation tests. It applies on top of the existing Torsten event-solver signatures."
+      },
+      "requires": [
+        {
+          "name": "Stan Math with Torsten callback overloads",
+          "repo": "nsiccha/math",
+          "sha": "4012d968c6059b9c31f88e25eefbdc8173fccdd6",
+          "why": "This tested integration includes the matching Torsten headers and accepts the two generated C++ functors."
+        },
+        {
+          "name": "Torsten Math analytic Jacobian implementation",
+          "repo": "nsiccha/torsten_math",
+          "sha": "aa2b00e466fd180a1178dd0f67bc48495d7789c5",
+          "why": "This source tree matches the Torsten subtree in the tested Stan Math revision."
+        },
+        {
+          "name": "Stan headers for models generated by upstream stanc3 master",
+          "repo": "stan-dev/stan",
+          "sha": "c59166d1cff8282bb60ae29dcaa69f008f749d4a",
+          "why": "This revision supplies the model I/O APIs used by the master-based compiler."
+        }
+      ],
+      "validation": [
+        {
+          "base": "456130a900c56ddb0505c4540460977106bd9938",
+          "native_build": "stanc3 76e540acae0652f2b1dbbb7763a98ce1c97f0da7, OCaml 5.5.2, Dune 3.23.1",
+          "result": "passed",
+          "tests": [
+            "dune runtest --force",
+            "test/integration/good/code-gen/torsten_jacobian/torsten_jacobian_test_model.stan",
+            "test/integration/bad/torsten_jacobian",
+            "test/integration/good/torsten/pmx_solve_jacobian.stan",
+            "test/integration/signatures/stan_math_signatures.t"
+          ],
+          "detail": "GCC syntax-checked the C++ emitted for this model against Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6. All 360 new overloads matched the release branch. Eleven invalid models were rejected. The generated model exercised all four solvers with and without the callback."
+        },
+        {
+          "base": "739471362446086911f1d6472c19ae0749c366ea",
+          "native_build": "stanc3 c45c7621eb49138e674ef3f5b954ee63b2678518, OCaml 4.14.1, Dune 3.23.1",
+          "result": "passed",
+          "tests": [
+            "test/integration/good/code-gen/torsten_jacobian/torsten_jacobian_test_model.stan"
+          ],
+          "detail": "GCC syntax-checked C++ from this release-based compiler using BridgeStan 2.9.0's Stan headers and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
         }
       ]
     }
