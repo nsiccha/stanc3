@@ -183,6 +183,7 @@ class ad_level_disconnected_function_model final : public model_base_crtp<ad_lev
           inline_empty_user_func_some_mat8__,
           "assigning variable inline_empty_user_func_return7__");
       }
+      current_statement__ = 3;
       stan::model::assign(empty_user_func_aos,
         inline_empty_user_func_return7__,
         "assigning variable empty_user_func_aos");
@@ -256,6 +257,7 @@ class ad_level_disconnected_function_model final : public model_base_crtp<ad_lev
           inline_empty_user_func_some_mat5__,
           "assigning variable inline_empty_user_func_return4__");
       }
+      current_statement__ = 3;
       stan::model::assign(empty_user_func_aos,
         inline_empty_user_func_return4__,
         "assigning variable empty_user_func_aos");
@@ -343,6 +345,7 @@ class ad_level_disconnected_function_model final : public model_base_crtp<ad_lev
           inline_empty_user_func_some_mat2__,
           "assigning variable inline_empty_user_func_return1__");
       }
+      current_statement__ = 3;
       stan::model::assign(empty_user_func_aos,
         inline_empty_user_func_return1__,
         "assigning variable empty_user_func_aos");
@@ -411,7 +414,6 @@ class ad_level_disconnected_function_model final : public model_base_crtp<ad_lev
       current_statement__ = 2;
       context__.validate_dims("parameter initialization", "theta", "double",
         std::vector<size_t>{});
-      int pos__ = std::numeric_limits<int>::min();
       Eigen::Matrix<local_scalar_t__,-1,-1> row_soa =
         Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(10, 10, DUMMY_VAR__);
       current_statement__ = 1;

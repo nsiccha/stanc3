@@ -68,13 +68,13 @@ let transform_program_blockwise (mir : Program.Typed.t)
   ; reverse_mode_log_prob= transform' None mir.reverse_mode_log_prob
   ; generate_quantities= transform' None mir.generate_quantities }
 
-let map_no_loc l =
-  List.map ~f:(fun s -> Stmt.{pattern= s; meta= Location_span.empty}) l
+let map_no_loc ?(meta = Location_span.empty) l =
+  List.map ~f:(fun s -> Stmt.{pattern= s; meta}) l
 
-let slist_no_loc l = Stmt.Pattern.SList (map_no_loc l)
-let block_no_loc l = Stmt.Pattern.Block (map_no_loc l)
+let block_no_loc ?meta l = Stmt.Pattern.Block (map_no_loc ?meta l)
 
-let slist_concat_no_loc l stmt =
+let slist_concat ~meta l stmt =
+  let slist_no_loc l = Stmt.Pattern.SList (map_no_loc ~meta l) in
   match l with [] -> stmt | l -> slist_no_loc (l @ [stmt])
 
 let gen_inline_var (name : string) (id_var : string) =
@@ -82,13 +82,18 @@ let gen_inline_var (name : string) (id_var : string) =
 
 let replace_fresh_local_vars (fname : string) stmt =
   let f (m : string String.Map.t) = function
-    | Stmt.Pattern.Decl {decl_adtype; decl_type; decl_id; initialize} ->
+    | Stmt.Pattern.Decl
+        {decl_adtype; decl_type; decl_id; initialize; decl_annotations} ->
         let new_name =
           match String.Map.find_opt decl_id m with
           | Some existing -> existing
           | None -> gen_inline_var fname decl_id in
         ( Stmt.Pattern.Decl
-            {decl_adtype; decl_id= new_name; decl_type; initialize}
+            { decl_adtype
+            ; decl_id= new_name
+            ; decl_type
+            ; initialize
+            ; decl_annotations }
         , String.Map.add m ~key:decl_id ~data:new_name )
     | Stmt.Pattern.For {loopvar; lower; upper; body} ->
         let new_name =
@@ -192,7 +197,8 @@ let handle_early_returns (fname : string) opt_var stmt =
                 { decl_adtype= DataOnly
                 ; decl_id= returned
                 ; decl_type= Sized SInt
-                ; initialize= Default }
+                ; initialize= Default
+                ; decl_annotations= [] }
           ; meta= Location_span.empty }
       ; Stmt.
           { pattern=
@@ -304,7 +310,8 @@ let rec inline_function_expression propto adt fim (Expr.{pattern; _} as e) =
                             (Type.to_unsized decl_type)
                       ; decl_id= inline_return_name
                       ; decl_type
-                      ; initialize= Uninit } ]
+                      ; initialize= Uninit
+                      ; decl_annotations= [] } ]
                   (* We should minimize the code that's having its variables
                      replaced to avoid conflict with the (two) new dummy
                      variables introduced by inlining *)
@@ -383,6 +390,7 @@ and inline_function_arguments fname propto adt fim args es =
                 ; decl_type=
                     Sized (unsafe_unsized_to_sized_type (Unsized e.meta.type_))
                 ; decl_id= temp
+                ; decl_annotations= []
                 ; initialize= Assign e } ]
         , stmts
         , {e with pattern= Var temp} ) in
@@ -424,25 +432,25 @@ let rec inline_function_statement propto adt fim Stmt.{pattern; meta} =
                   ICE.internal_error
                     "Internal error in inline optimization: lhs could not be \
                      converted round-trip to expression" [@coverage off] in
-            slist_concat_no_loc
+            slist_concat ~meta
               (dl2 @ dl1 @ sl2 @ sl1)
               (Assignment (lhs', ut, e2))
         | TargetPE e ->
             let d, s, e = inline_expr e in
-            slist_concat_no_loc (d @ s) (TargetPE e)
+            slist_concat ~meta (d @ s) (TargetPE e)
         | JacobianPE e ->
             let d, s, e = inline_expr e in
-            slist_concat_no_loc (d @ s) (JacobianPE e)
+            slist_concat ~meta (d @ s) (JacobianPE e)
         | NRFunApp
             (((CompilerInternal _ | StanLib _ | Operator _) as kind), exprs) ->
             let d, s, es = inline_list inline_expr exprs in
-            slist_concat_no_loc (d @ s) (NRFunApp (kind, es))
+            slist_concat ~meta (d @ s) (NRFunApp (kind, es))
         | NRFunApp (UserDefined (fname, sfx), exprs) -> (
             let sfx, fim' = compute_suffix_and_map propto sfx fim in
             match String.Map.find_opt fname fim' with
             | None ->
                 let d, s, es = inline_list inline_expr exprs in
-                slist_concat_no_loc (d @ s)
+                slist_concat ~meta (d @ s)
                   (NRFunApp (UserDefined (fname, sfx), es))
             | Some (_, args, b) ->
                 let b = replace_fresh_local_vars fname b in
@@ -450,17 +458,17 @@ let rec inline_function_statement propto adt fim Stmt.{pattern; meta} =
                 let d, s, es =
                   inline_function_arguments fname propto adt fim args exprs
                 in
-                slist_concat_no_loc (d @ s)
+                slist_concat ~meta (d @ s)
                   (subst_args_stmt args es
                      {pattern= b; meta= Location_span.empty})
                     .pattern)
         | Return None -> Return None
         | Return (Some expr) ->
             let d, s, e = inline_expr expr in
-            slist_concat_no_loc (d @ s) (Return (Some e))
+            slist_concat ~meta (d @ s) (Return (Some e))
         | IfElse (expr, s1, s2) ->
             let d, s, e = inline_expr expr in
-            slist_concat_no_loc (d @ s)
+            slist_concat ~meta (d @ s)
               (IfElse
                  ( e
                  , inline_function_statement propto adt fim s1
@@ -468,7 +476,7 @@ let rec inline_function_statement propto adt fim Stmt.{pattern; meta} =
                  ))
         | While (expr, stmt) ->
             let d', s', e = inline_expr expr in
-            slist_concat_no_loc (d' @ s')
+            slist_concat ~meta (d' @ s')
               (While
                  ( e
                  , if List.is_empty s' then
@@ -482,7 +490,7 @@ let rec inline_function_statement propto adt fim Stmt.{pattern; meta} =
         | For {loopvar; lower; upper; body} ->
             let d_lower, s_lower, lower = inline_expr lower in
             let d_upper, s_upper, upper = inline_expr upper in
-            slist_concat_no_loc
+            slist_concat ~meta
               (d_lower @ d_upper @ s_lower @ s_upper)
               (For
                  { loopvar
@@ -504,10 +512,20 @@ let rec inline_function_statement propto adt fim Stmt.{pattern; meta} =
             Block (List.map l ~f:(inline_function_statement propto adt fim))
         | SList l ->
             SList (List.map l ~f:(inline_function_statement propto adt fim))
-        | Decl {decl_adtype; decl_id; decl_type; initialize= Assign expr} ->
+        | Decl
+            { decl_adtype
+            ; decl_id
+            ; decl_type
+            ; initialize= Assign expr
+            ; decl_annotations } ->
             let d, s, e = inline_expr expr in
-            slist_concat_no_loc (d @ s)
-              (Decl {decl_adtype; decl_id; decl_type; initialize= Assign e})
+            slist_concat ~meta (d @ s)
+              (Decl
+                 { decl_adtype
+                 ; decl_id
+                 ; decl_type
+                 ; initialize= Assign e
+                 ; decl_annotations })
         | Decl r -> Decl r
         | Skip -> Skip
         | Break -> Break
@@ -651,6 +669,7 @@ let unroll_loop_one_step_statement _ =
                       { decl_adtype= DataOnly
                       ; decl_id= lower_name
                       ; decl_type= Sized SInt
+                      ; decl_annotations= []
                       ; initialize= Assign lower }
                 ; meta= lower.meta.loc } ] )
           else (lower, []) in
@@ -998,6 +1017,64 @@ let copy_propagation mir =
 let is_skip_break_continue s =
   match s with Stmt.Pattern.Skip | Break | Continue -> true | _ -> false
 
+(** Remove declarations of local variables that are never mentioned again. *)
+let remove_unreferenced_decls globals s =
+  let rec remove_unreferenced_decls_stmt used (s : Stmt.Located.t) =
+    let remove_unreferenced_decls_list used stmts =
+      (* fold_right so that we reach a decl after we have considered every
+         statement after it *)
+      List.fold_right stmts ~init:([], used) ~f:(fun s (acc, used) ->
+          match remove_unreferenced_decls_stmt used s with
+          | None -> (acc, used)
+          | Some (s', used') -> (s' :: acc, used')) in
+    match s.pattern with
+    | Decl {initialize= Assign e; _} when cannot_remove_expr e ->
+        Some (s, Set.Poly.union used (expr_var_names_set e))
+    | Decl {decl_id; _}
+      when not (Set.Poly.mem decl_id globals || Set.Poly.mem decl_id used) ->
+        None
+    | SList l ->
+        let l', used = remove_unreferenced_decls_list used l in
+        Some ({s with pattern= SList l'}, used)
+    | Block l ->
+        (* [Block] and [Profile] are scopes, so locals cannot be used later *)
+        let l', inner = remove_unreferenced_decls_list Set.Poly.empty l in
+        Some ({s with pattern= Block l'}, Set.Poly.union used inner)
+    | Profile (name, l) ->
+        let l', inner = remove_unreferenced_decls_list Set.Poly.empty l in
+        Some ({s with pattern= Profile (name, l')}, Set.Poly.union used inner)
+    | IfElse (e, b1, b2) ->
+        let b1', used1 = clean_statement used b1 in
+        let b2', used2 =
+          match b2 with
+          | Some b ->
+              let b', used' = clean_statement used b in
+              (Some b', used')
+          | None -> (None, used) in
+        Some
+          ( {s with pattern= IfElse (e, b1', b2')}
+          , Set.Poly.union_list [used1; used2; expr_var_names_set e] )
+    | While (e, b) ->
+        let b', used' = clean_statement used b in
+        Some
+          ( {s with pattern= While (e, b')}
+          , Set.Poly.union used' (expr_var_names_set e) )
+    | For {loopvar; lower; upper; body} ->
+        let body', used' = clean_statement used body in
+        Some
+          ( {s with pattern= For {loopvar; lower; upper; body= body'}}
+          , Set.Poly.union_list
+              [used'; expr_var_names_set lower; expr_var_names_set upper] )
+    | Break | Continue | Skip -> Some (s, used)
+    | Decl _ | Assignment _ | TargetPE _ | JacobianPE _ | NRFunApp _ | Return _
+      ->
+        Some (s, Set.Poly.union used (stmt_referenced_names_set s))
+  and clean_statement used stmt =
+    match remove_unreferenced_decls_stmt used stmt with
+    | Some result -> result
+    | None -> ({stmt with pattern= Skip}, used) in
+  fst (clean_statement Set.Poly.empty s)
+
 (* TODO: could also implement partial dead code elimination *)
 let dead_code_elimination (mir : Program.Typed.t) =
   (* TODO: think about whether we should treat function bodies as local scopes
@@ -1028,14 +1105,6 @@ let dead_code_elimination (mir : Program.Typed.t) =
                  (Stmt.Helpers.lhs_indices lhs)
           then stmt
           else Skip
-      (* NOTE: we never get rid of declarations as we might not be able to
-         remove an assignment to a variable
-            due to side effects. *)
-      (* TODO: maybe we should revisit that. *)
-      | Decl ({decl_id; initialize= Assign e; _} as decl) ->
-          if Set.Poly.mem decl_id live_variables_s || cannot_remove_expr e then
-            stmt
-          else Decl {decl with initialize= Uninit}
       | Decl _ | TargetPE _ | JacobianPE _
        |NRFunApp (_, _)
        |Break | Continue | Return _ | Skip ->
@@ -1079,7 +1148,8 @@ let dead_code_elimination (mir : Program.Typed.t) =
           SList l' in
     let dead_code_elim_stmt =
       map_rec_stmt_loc_num flowgraph_to_mir dead_code_elim_stmt_base in
-    dead_code_elim_stmt (LabelMap.find 1 flowgraph_to_mir) in
+    dead_code_elim_stmt (LabelMap.find 1 flowgraph_to_mir)
+    |> remove_unreferenced_decls (Monotone_framework.globals mir) in
   transform_program mir transform
 
 let partial_evaluation p =
@@ -1251,7 +1321,8 @@ let lazy_code_motion ?(preserve_stability = false) (mir : Program.Typed.t) =
                   { decl_adtype= Expr.Typed.adlevel_of key
                   ; decl_id= data
                   ; decl_type= Type.Unsized (Expr.Typed.type_of key)
-                  ; initialize= Default }
+                  ; initialize= Default
+                  ; decl_annotations= [] (* TODO annotations: correct? *) }
             ; meta= Location_span.empty }
           :: accum) in
     let lazy_code_motion_base i stmt =
@@ -1502,6 +1573,7 @@ let optimize_ad_levels (mir : Program.Typed.t) =
 
     @param mir: The program's whole MIR. *)
 let optimize_soa (mir : Program.Typed.t) =
+  Memory_patterns.reset_warnings ();
   let transfer_aos_variables
       (flowgraph_to_mir : Stmt.Located.Non_recursive.t LabelMap.t) (l : int)
       (aos_variables : string Set.Poly.t) =
@@ -1514,12 +1586,10 @@ let optimize_soa (mir : Program.Typed.t) =
       mir.reverse_mode_log_prob in
   let mod_exprs aos_exits mod_expr =
     map_rec_expr (Memory_patterns.modify_expr_pattern aos_exits) mod_expr in
-  let modify_stmt_patt stmt_pattern variable_set =
-    Memory_patterns.modify_stmt_pattern stmt_pattern variable_set in
   let transform stmt =
     optimize_minimal_variables ~transfer_variables:transfer_aos_variables
-      ~update_expr:mod_exprs ~update_stmt:modify_stmt_patt ~initial_variables
-      stmt in
+      ~update_expr:mod_exprs ~update_stmt:Memory_patterns.modify_stmt_pattern
+      ~initial_variables stmt in
   let transform' s =
     match transform {pattern= SList s; meta= Location_span.empty} with
     | {pattern= SList (l : Stmt.Located.t list); _} -> l

@@ -5,10 +5,12 @@ namespace partial_eval_conditions_model_namespace {
 using stan::model::model_base_crtp;
 using namespace stan::math;
 stan::math::profile_map profiles__;
-static constexpr std::array<const char*, 3> locations_array__ =
+static constexpr std::array<const char*, 5> locations_array__ =
   {" (found before start of program)",
-  " (in '../partial-eval-conditions.stan', line 2, column 2 to column 12)",
-  " (in '../partial-eval-conditions.stan', line 10, column 4 to column 23)"};
+  " (in '../partial-eval-conditions.stan', line 4, column 2 to column 31)",
+  " (in '../partial-eval-conditions.stan', line 10, column 4 to column 23)",
+  " (in '../partial-eval-conditions.stan', line 9, column 2 to line 10, column 23)",
+  " (in '../partial-eval-conditions.stan', line 2, column 2 to column 12)"};
 class partial_eval_conditions_model final : public model_base_crtp<partial_eval_conditions_model> {
  private:
   
@@ -64,7 +66,7 @@ class partial_eval_conditions_model final : public model_base_crtp<partial_eval_
     // suppress unused var warning
     (void) function__;
     try {
-      int y = std::numeric_limits<int>::min();
+      current_statement__ = 1;
       if (pstream__) {
         stan::math::stan_print(pstream__, 42);
         *(pstream__) << std::endl;
@@ -106,7 +108,7 @@ class partial_eval_conditions_model final : public model_base_crtp<partial_eval_
     // suppress unused var warning
     (void) function__;
     try {
-      int y = std::numeric_limits<int>::min();
+      current_statement__ = 1;
       if (pstream__) {
         stan::math::stan_print(pstream__, 42);
         *(pstream__) << std::endl;

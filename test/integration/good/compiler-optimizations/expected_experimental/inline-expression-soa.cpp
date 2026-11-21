@@ -34,11 +34,8 @@ foo(const T0__& i_arg__, std::ostream* pstream__) {
   // suppress unused var warning
   (void) DUMMY_VAR__;
   try {
-    Eigen::Matrix<local_scalar_t__,-1,-1> lcm1__;
-    {
-      current_statement__ = 3;
-      return stan::math::multiply(i, i);
-    }
+    current_statement__ = 3;
+    return stan::math::multiply(i, i);
   } catch (const std::exception& e) {
     stan::lang::rethrow_located(e, locations_array__[current_statement__]);
   }
@@ -98,21 +95,20 @@ class inline_expression_soa_model final : public model_base_crtp<inline_expressi
     // suppress unused var warning
     (void) function__;
     try {
-      Eigen::Matrix<double,-1,-1> lcm9__;
       Eigen::Matrix<double,-1,-1> lcm8__;
-      double lcm7__;
       current_statement__ = 1;
       auto p =
         in__.template read<Eigen::Matrix<local_scalar_t__,-1,-1>>(10, 10);
       {
+        current_statement__ = 2;
         decltype(auto) inline_foo_i_arg5__ =
           stan::math::to_ref(stan::math::add(p, p));
-        Eigen::Matrix<double,-1,-1> inline_foo_return4__;
         {
           stan::model::assign(lcm8__,
             stan::math::multiply(inline_foo_i_arg5__, inline_foo_i_arg5__),
             "assigning variable lcm8__");
         }
+        current_statement__ = 2;
         lp_accum__.add(stan::math::std_normal_lpdf<propto__>(
                          stan::math::to_vector(lcm8__)));
       }
@@ -146,21 +142,20 @@ class inline_expression_soa_model final : public model_base_crtp<inline_expressi
     // suppress unused var warning
     (void) function__;
     try {
-      Eigen::Matrix<double,-1,-1> lcm6__;
       Eigen::Matrix<double,-1,-1> lcm5__;
-      double lcm4__;
       current_statement__ = 1;
       auto p =
         in__.template read<Eigen::Matrix<local_scalar_t__,-1,-1>>(10, 10);
       {
+        current_statement__ = 2;
         decltype(auto) inline_foo_i_arg2__ =
           stan::math::to_ref(stan::math::add(p, p));
-        Eigen::Matrix<double,-1,-1> inline_foo_return1__;
         {
           stan::model::assign(lcm5__,
             stan::math::multiply(inline_foo_i_arg2__, inline_foo_i_arg2__),
             "assigning variable lcm5__");
         }
+        current_statement__ = 2;
         lp_accum__.add(stan::math::std_normal_lpdf<propto__>(
                          stan::math::to_vector(lcm5__)));
       }
@@ -205,8 +200,6 @@ class inline_expression_soa_model final : public model_base_crtp<inline_expressi
     // suppress unused var warning
     (void) function__;
     try {
-      int lcm3__;
-      int lcm2__;
       current_statement__ = 1;
       auto p =
         in__.template read<Eigen::Matrix<local_scalar_t__,-1,-1>>(10, 10);
@@ -265,7 +258,6 @@ class inline_expression_soa_model final : public model_base_crtp<inline_expressi
       current_statement__ = 1;
       context__.validate_dims("parameter initialization", "p", "double",
         std::vector<size_t>{static_cast<size_t>(10), static_cast<size_t>(10)});
-      int pos__ = std::numeric_limits<int>::min();
       Eigen::Matrix<local_scalar_t__,-1,-1> p =
         Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(10, 10, DUMMY_VAR__);
       current_statement__ = 1;

@@ -7,16 +7,6 @@ matrix[10, 10] X_tp4: AoS
 matrix[10, 10] X_tp5: AoS
 matrix[10, 10] X_tp6: AoS
 matrix[10, 10] X_tp7: AoS
-Optimization hazard warning (Line 6): SoA warning: Right hand side contains only AoS expressions: X_p
-Optimization hazard warning (Line 10): SoA warning: Right hand side contains only AoS expressions: X_tp1
-Optimization hazard warning (Line 11): SoA warning: Right hand side contains only AoS expressions: X_tp2
-Optimization hazard warning (Line 12): SoA warning: Right hand side contains only AoS expressions: X_tp3
-Optimization hazard warning (Line 13): SoA warning: Right hand side contains only AoS expressions: X_tp4
-Optimization hazard warning (Line 14): SoA warning: Right hand side contains only AoS expressions: X_tp5
-Optimization hazard warning (Line 15): SoA warning: Right hand side contains only AoS expressions: X_tp6
-Optimization hazard warning (Line 16): SoA warning: Right hand side contains only AoS expressions: X_tp7
-Optimization hazard warning (Line 19): SoA warning: Accessed by element in a for loop: X_tp7
-Optimization hazard warning (Line 19): SoA warning: Right hand side contains only AoS expressions: X_tp7
 ((functions_block ()) (input_vars ()) (prepare_data ())
  (log_prob
   (((pattern
@@ -39,7 +29,8 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype AutoDiffable) (decl_id X_tp1)
@@ -48,7 +39,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp1) ()) UMatrix
@@ -65,7 +56,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp2) ()) UMatrix
@@ -82,7 +73,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp3) ()) UMatrix
@@ -99,7 +90,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp4) ()) UMatrix
@@ -116,7 +107,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp5) ()) UMatrix
@@ -133,7 +124,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp6) ()) UMatrix
@@ -150,7 +141,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp7) ()) UMatrix
@@ -231,7 +222,8 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype AutoDiffable) (decl_id X_tp1)
@@ -240,7 +232,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp1) ()) UMatrix
@@ -257,7 +249,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp2) ()) UMatrix
@@ -274,7 +266,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp3) ()) UMatrix
@@ -291,7 +283,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp4) ()) UMatrix
@@ -308,7 +300,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp5) ()) UMatrix
@@ -325,7 +317,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp6) ()) UMatrix
@@ -342,7 +334,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_tp7) ()) UMatrix
@@ -423,7 +415,8 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype DataOnly) (decl_id X_tp1)
@@ -432,7 +425,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype DataOnly) (decl_id X_tp2)
@@ -441,7 +434,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype DataOnly) (decl_id X_tp3)
@@ -450,7 +443,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype DataOnly) (decl_id X_tp4)
@@ -459,7 +452,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype DataOnly) (decl_id X_tp5)
@@ -468,7 +461,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype DataOnly) (decl_id X_tp6)
@@ -477,7 +470,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype DataOnly) (decl_id X_tp7)
@@ -486,7 +479,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (NRFunApp
@@ -700,7 +693,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
  (transform_inits
   (((pattern
      (Decl (decl_adtype DataOnly) (decl_id pos__) (decl_type (Sized SInt))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable pos__) ()) UInt
@@ -713,7 +706,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (NRFunApp (CompilerInternal FnReadData)
@@ -739,7 +732,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
         (SMatrix AoS
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable X_p) ()) UMatrix
@@ -769,7 +762,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
       (SMatrix AoS
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block Parameters) (out_trans Identity)))
+     (out_block Parameters) (out_trans Identity) (out_annotations ())))
    (X_tp1 <opaque>
     ((out_unconstrained_st
       (SMatrix AoS
@@ -779,7 +772,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
       (SMatrix AoS
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block TransformedParameters) (out_trans Identity)))
+     (out_block TransformedParameters) (out_trans Identity) (out_annotations ())))
    (X_tp2 <opaque>
     ((out_unconstrained_st
       (SMatrix AoS
@@ -789,7 +782,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
       (SMatrix AoS
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block TransformedParameters) (out_trans Identity)))
+     (out_block TransformedParameters) (out_trans Identity) (out_annotations ())))
    (X_tp3 <opaque>
     ((out_unconstrained_st
       (SMatrix AoS
@@ -799,7 +792,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
       (SMatrix AoS
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block TransformedParameters) (out_trans Identity)))
+     (out_block TransformedParameters) (out_trans Identity) (out_annotations ())))
    (X_tp4 <opaque>
     ((out_unconstrained_st
       (SMatrix AoS
@@ -809,7 +802,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
       (SMatrix AoS
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block TransformedParameters) (out_trans Identity)))
+     (out_block TransformedParameters) (out_trans Identity) (out_annotations ())))
    (X_tp5 <opaque>
     ((out_unconstrained_st
       (SMatrix AoS
@@ -819,7 +812,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
       (SMatrix AoS
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block TransformedParameters) (out_trans Identity)))
+     (out_block TransformedParameters) (out_trans Identity) (out_annotations ())))
    (X_tp6 <opaque>
     ((out_unconstrained_st
       (SMatrix AoS
@@ -829,7 +822,7 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
       (SMatrix AoS
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block TransformedParameters) (out_trans Identity)))
+     (out_block TransformedParameters) (out_trans Identity) (out_annotations ())))
    (X_tp7 <opaque>
     ((out_unconstrained_st
       (SMatrix AoS
@@ -839,5 +832,15 @@ Optimization hazard warning (Line 19): SoA warning: Right hand side contains onl
       (SMatrix AoS
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block TransformedParameters) (out_trans Identity)))))
+     (out_block TransformedParameters) (out_trans Identity) (out_annotations ())))))
  (prog_name deep_dependence_model) (prog_path ../deep_dependence.stan))
+/*
+../deep_dependence.stan:10:5: warning: Optimization hazard (SoA): The left hand side 'X_tp1' is AoS, so the following values from the right hand side will be demoted: X_p
+../deep_dependence.stan:11:5: warning: Optimization hazard (SoA): The left hand side 'X_tp2' is AoS, so the following values from the right hand side will be demoted: X_tp1
+../deep_dependence.stan:12:5: warning: Optimization hazard (SoA): The left hand side 'X_tp3' is AoS, so the following values from the right hand side will be demoted: X_tp2
+../deep_dependence.stan:13:5: warning: Optimization hazard (SoA): The left hand side 'X_tp4' is AoS, so the following values from the right hand side will be demoted: X_tp3
+../deep_dependence.stan:14:5: warning: Optimization hazard (SoA): The left hand side 'X_tp5' is AoS, so the following values from the right hand side will be demoted: X_tp4
+../deep_dependence.stan:15:5: warning: Optimization hazard (SoA): The left hand side 'X_tp6' is AoS, so the following values from the right hand side will be demoted: X_tp5
+../deep_dependence.stan:16:5: warning: Optimization hazard (SoA): The left hand side 'X_tp7' is AoS, so the following values from the right hand side will be demoted: X_tp6
+../deep_dependence.stan:19:13: warning: Optimization hazard (SoA): Accessed by element in a for loop: X_tp7
+*/

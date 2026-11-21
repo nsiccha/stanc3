@@ -18,9 +18,9 @@ static constexpr std::array<const char*, 27> locations_array__ =
   " (in '../partial-eval.stan', line 25, column 2 to column 34)",
   " (in '../partial-eval.stan', line 26, column 2 to column 24)",
   " (in '../partial-eval.stan', line 27, column 2 to column 29)",
-  " (in '../partial-eval.stan', line 29, column 2 to column 25)",
   " (in '../partial-eval.stan', line 30, column 2 to column 11)",
   " (in '../partial-eval.stan', line 32, column 2 to column 24)",
+  " (in '../partial-eval.stan', line 34, column 2 to column 18)",
   " (in '../partial-eval.stan', line 2, column 2 to column 17)",
   " (in '../partial-eval.stan', line 3, column 2 to column 22)",
   " (in '../partial-eval.stan', line 4, column 8 to column 9)",
@@ -173,12 +173,6 @@ class partial_eval_model final : public model_base_crtp<partial_eval_model> {
     try {
       std::complex<double> lcm19__;
       std::complex<double> lcm18__;
-      double lcm17__;
-      double lcm16__;
-      double lcm15__;
-      double lcm14__;
-      double lcm13__;
-      Eigen::Matrix<double,-1,1> lcm12__;
       current_statement__ = 1;
       auto a =
         in__.template read<Eigen::Matrix<local_scalar_t__,-1,1>>(n_pair);
@@ -217,18 +211,16 @@ class partial_eval_model final : public model_base_crtp<partial_eval_model> {
                          static_cast<double>(0), static_cast<double>(100)));
         current_statement__ = 11;
         lp_accum__.add(stan::math::normal_lpdf<propto__>(y, y_hat, sigma_y));
-        std::complex<double> z =
-          std::complex<double>(std::numeric_limits<double>::quiet_NaN(),
-            std::numeric_limits<double>::quiet_NaN());
         lcm19__ = stan::math::to_complex(7, 5);
-        current_statement__ = 13;
+        current_statement__ = 12;
         if (pstream__) {
           stan::math::stan_print(pstream__, lcm19__);
           *(pstream__) << std::endl;
         }
         lcm18__ = stan::math::to_complex(5, 4);
-        current_statement__ = 14;
+        current_statement__ = 13;
         lp_accum__.add(stan::math::get_real(lcm18__));
+        current_statement__ = 14;
         if (pstream__) {
           stan::math::stan_print(pstream__, 0);
           *(pstream__) << std::endl;
@@ -266,12 +258,6 @@ class partial_eval_model final : public model_base_crtp<partial_eval_model> {
     try {
       std::complex<double> lcm11__;
       std::complex<double> lcm10__;
-      double lcm9__;
-      double lcm8__;
-      double lcm7__;
-      double lcm6__;
-      double lcm5__;
-      Eigen::Matrix<double,-1,1> lcm4__;
       current_statement__ = 1;
       auto a =
         in__.template read<
@@ -313,18 +299,16 @@ class partial_eval_model final : public model_base_crtp<partial_eval_model> {
                          static_cast<double>(0), static_cast<double>(100)));
         current_statement__ = 11;
         lp_accum__.add(stan::math::normal_lpdf<propto__>(y, y_hat, sigma_y));
-        std::complex<double> z =
-          std::complex<double>(std::numeric_limits<double>::quiet_NaN(),
-            std::numeric_limits<double>::quiet_NaN());
         lcm11__ = stan::math::to_complex(7, 5);
-        current_statement__ = 13;
+        current_statement__ = 12;
         if (pstream__) {
           stan::math::stan_print(pstream__, lcm11__);
           *(pstream__) << std::endl;
         }
         lcm10__ = stan::math::to_complex(5, 4);
-        current_statement__ = 14;
+        current_statement__ = 13;
         lp_accum__.add(stan::math::get_real(lcm10__));
+        current_statement__ = 14;
         if (pstream__) {
           stan::math::stan_print(pstream__, 0);
           *(pstream__) << std::endl;
@@ -371,9 +355,6 @@ class partial_eval_model final : public model_base_crtp<partial_eval_model> {
     // suppress unused var warning
     (void) function__;
     try {
-      int lcm3__;
-      int lcm2__;
-      Eigen::Matrix<double,-1,1> lcm1__;
       current_statement__ = 1;
       auto a =
         in__.template read<Eigen::Matrix<local_scalar_t__,-1,1>>(n_pair);

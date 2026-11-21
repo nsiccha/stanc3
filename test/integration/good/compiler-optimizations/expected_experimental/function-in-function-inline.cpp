@@ -7,12 +7,12 @@ using namespace stan::math;
 stan::math::profile_map profiles__;
 static constexpr std::array<const char*, 8> locations_array__ =
   {" (found before start of program)",
+  " (in '../function-in-function-inline.stan', line 7, column 4 to column 27)",
   " (in '../function-in-function-inline.stan', line 14, column 2 to column 29)",
   " (in '../function-in-function-inline.stan', line 15, column 2 to column 16)",
   " (in '../function-in-function-inline.stan', line 11, column 2 to column 17)",
   " (in '../function-in-function-inline.stan', line 3, column 4 to column 20)",
   " (in '../function-in-function-inline.stan', line 2, column 30 to line 4, column 3)",
-  " (in '../function-in-function-inline.stan', line 7, column 4 to column 27)",
   " (in '../function-in-function-inline.stan', line 6, column 30 to line 8, column 3)"};
 template <bool propto__, typename T0__,
           stan::require_all_t<stan::is_col_vector<T0__>,
@@ -39,11 +39,8 @@ inner_lpdf(const T0__& phi_arg__, std::ostream* pstream__) {
   // suppress unused var warning
   (void) DUMMY_VAR__;
   try {
-    local_scalar_t__ lcm1__;
-    {
-      current_statement__ = 4;
-      return stan::math::sum(phi);
-    }
+    current_statement__ = 5;
+    return stan::math::sum(phi);
   } catch (const std::exception& e) {
     stan::lang::rethrow_located(e, locations_array__[current_statement__]);
   }
@@ -63,11 +60,8 @@ outer_lpdf(const T0__& phi_arg__, std::ostream* pstream__) {
   // suppress unused var warning
   (void) DUMMY_VAR__;
   try {
-    local_scalar_t__ lcm2__;
-    {
-      current_statement__ = 6;
-      return inner_lpdf<false>(phi, pstream__);
-    }
+    current_statement__ = 1;
+    return inner_lpdf<false>(phi, pstream__);
   } catch (const std::exception& e) {
     stan::lang::rethrow_located(e, locations_array__[current_statement__]);
   }
@@ -99,14 +93,14 @@ class function_in_function_inline_model final : public model_base_crtp<function_
     try {
       int pos__;
       pos__ = 1;
-      current_statement__ = 3;
+      current_statement__ = 4;
       context__.validate_dims("data initialization", "phi", "double",
         std::vector<size_t>{static_cast<size_t>(10)});
       phi_data__ = Eigen::Matrix<double,-1,1>::Constant(10,
                      std::numeric_limits<double>::quiet_NaN());
       new (&phi) Eigen::Map<Eigen::Matrix<double,-1,1>>(phi_data__.data(),
         10);
-      current_statement__ = 3;
+      current_statement__ = 4;
       stan::io::read_from_context(phi, context__, "phi");
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
@@ -146,15 +140,10 @@ class function_in_function_inline_model final : public model_base_crtp<function_
     try {
       double lcm6__;
       {
-        double ret = std::numeric_limits<double>::quiet_NaN();
-        double inline_outer_lpdf_return12__;
         {
-          double inline_outer_lpdf_inline_inner_lpdf_return5__13__;
-          {
-            lcm6__ = stan::math::sum(phi);
-          }
+          lcm6__ = stan::math::sum(phi);
         }
-        current_statement__ = 2;
+        current_statement__ = 3;
         lp_accum__.add(lcm6__);
       }
     } catch (const std::exception& e) {
@@ -189,15 +178,10 @@ class function_in_function_inline_model final : public model_base_crtp<function_
     try {
       double lcm5__;
       {
-        double ret = std::numeric_limits<double>::quiet_NaN();
-        double inline_outer_lpdf_return9__;
         {
-          double inline_outer_lpdf_inline_inner_lpdf_return5__10__;
-          {
-            lcm5__ = stan::math::sum(phi);
-          }
+          lcm5__ = stan::math::sum(phi);
         }
-        current_statement__ = 2;
+        current_statement__ = 3;
         lp_accum__.add(lcm5__);
       }
     } catch (const std::exception& e) {
@@ -241,8 +225,6 @@ class function_in_function_inline_model final : public model_base_crtp<function_
     // suppress unused var warning
     (void) function__;
     try {
-      int lcm4__;
-      int lcm3__;
       if (stan::math::logical_negation(
             (stan::math::primitive_value(emit_transformed_parameters__) ||
             stan::math::primitive_value(emit_generated_quantities__)))) {

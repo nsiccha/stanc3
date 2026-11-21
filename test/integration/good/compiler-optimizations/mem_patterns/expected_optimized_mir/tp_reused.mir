@@ -2,15 +2,9 @@
 matrix[5, 10] first_pass_soa_x: AoS
 matrix[5, 10] aos_x: AoS
 matrix[5, 10] tp_matrix_aos: AoS
-Optimization hazard warning (Line 16): SoA warning: Right hand side contains only AoS expressions: first_pass_soa_x
-Optimization hazard warning (Line 17): SoA warning: Right hand side contains only AoS expressions: aos_x
-Optimization hazard warning (Line 21): SoA warning: Right hand side contains only AoS expressions: tp_matrix_aos
-Optimization hazard warning (Line 22): SoA warning: Function 'nono_func' on right hand side of assignment is not supported by SoA: aos_x, tp_matrix_aos
-Optimization hazard warning (Line 22): SoA warning: Right hand side contains only AoS expressions: tp_matrix_aos
-Optimization hazard warning (Line 22): SoA warning: Right hand side of assignment is all AoS: aos_x, tp_matrix_aos
 ((functions_block
   (((fdrt (ReturnType UMatrix)) (fdname nono_func) (fdsuffix FnPlain)
-    (fdargs ((AutoDiffable x UMatrix)))
+    (fdargs ((AutoDiffable x UMatrix))) (fdannotations ())
     (fdbody
      (((pattern
         (Block
@@ -22,7 +16,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
        (meta <opaque>))))
     (fdloc <opaque>))
    ((fdrt (ReturnType UMatrix)) (fdname okay_reduction) (fdsuffix FnPlain)
-    (fdargs ((AutoDiffable sum_x UReal) (AutoDiffable y UMatrix)))
+    (fdargs ((AutoDiffable sum_x UReal) (AutoDiffable y UMatrix))) (fdannotations ())
     (fdbody
      (((pattern
         (Block
@@ -42,7 +36,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
  (prepare_data
   (((pattern
      (Decl (decl_adtype DataOnly) (decl_id data_r) (decl_type (Sized SReal))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (NRFunApp (CompilerInternal FnReadData)
@@ -73,7 +67,8 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype AutoDiffable) (decl_id aos_x)
@@ -95,7 +90,8 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype AutoDiffable) (decl_id tp_matrix_aos)
@@ -104,7 +100,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
         (SMatrix AoS
          ((pattern (Lit Int 5)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable tp_matrix_aos) ()) UMatrix
@@ -140,7 +136,8 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype AutoDiffable) (decl_id aos_x)
@@ -162,7 +159,8 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype AutoDiffable) (decl_id tp_matrix_aos)
@@ -171,7 +169,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
         (SMatrix AoS
          ((pattern (Lit Int 5)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable tp_matrix_aos) ()) UMatrix
@@ -207,7 +205,8 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype DataOnly) (decl_id aos_x)
@@ -229,7 +228,8 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype DataOnly) (decl_id tp_matrix_aos)
@@ -238,7 +238,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
         (SMatrix AoS
          ((pattern (Lit Int 5)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (NRFunApp
@@ -315,7 +315,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
  (transform_inits
   (((pattern
      (Decl (decl_adtype DataOnly) (decl_id pos__) (decl_type (Sized SInt))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable pos__) ()) UInt
@@ -328,7 +328,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
         (SMatrix AoS
          ((pattern (Lit Int 5)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (NRFunApp (CompilerInternal FnReadData)
@@ -355,7 +355,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
         (SMatrix AoS
          ((pattern (Lit Int 5)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (NRFunApp (CompilerInternal FnReadData)
@@ -382,7 +382,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
         (SMatrix AoS
          ((pattern (Lit Int 5)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable first_pass_soa_x) ()) UMatrix
@@ -409,7 +409,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
         (SMatrix AoS
          ((pattern (Lit Int 5)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable aos_x) ()) UMatrix
@@ -439,7 +439,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
       (SMatrix AoS
        ((pattern (Lit Int 5)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block Parameters) (out_trans Identity)))
+     (out_block Parameters) (out_trans Identity) (out_annotations ())))
    (aos_x <opaque>
     ((out_unconstrained_st
       (SMatrix AoS
@@ -449,7 +449,7 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
       (SMatrix AoS
        ((pattern (Lit Int 5)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block Parameters) (out_trans Identity)))
+     (out_block Parameters) (out_trans Identity) (out_annotations ())))
    (tp_matrix_aos <opaque>
     ((out_unconstrained_st
       (SMatrix AoS
@@ -459,5 +459,12 @@ Optimization hazard warning (Line 22): SoA warning: Right hand side of assignmen
       (SMatrix AoS
        ((pattern (Lit Int 5)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 10)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block TransformedParameters) (out_trans Identity)))))
+     (out_block TransformedParameters) (out_trans Identity) (out_annotations ())))))
  (prog_name tp_reused_model) (prog_path ../tp_reused.stan))
+/*
+../tp_reused.stan:21:5: warning: Optimization hazard (SoA): The left hand side 'tp_matrix_aos' is AoS, so the following values from the right hand side will be demoted: first_pass_soa_x
+../tp_reused.stan:22:5: warning: Optimization hazard (SoA): Used in user defined function: aos_x
+../tp_reused.stan:22:5: warning: Optimization hazard (SoA): Right hand side of assignment to 'tp_matrix_aos' is all AoS: aos_x
+../tp_reused.stan:22:5: warning: Optimization hazard (SoA): Function 'nono_func' on right hand side of assignment to 'tp_matrix_aos' is not supported by SoA: aos_x
+../tp_reused.stan:22:5: warning: Optimization hazard (SoA): The left hand side 'tp_matrix_aos' is AoS, so the following values from the right hand side will be demoted: aos_x
+*/

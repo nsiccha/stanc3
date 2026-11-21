@@ -2,10 +2,6 @@
 matrix[3, 3] m1: AoS
 matrix[3, 3] m2: AoS
 tuple(matrix[2, 2], matrix[3, 3]) temp: AoS
-Optimization hazard warning (Line 5): SoA warning: Right hand side contains only AoS expressions: m1
-Optimization hazard warning (Line 5): SoA warning: Right hand side contains only AoS expressions: m2
-Optimization hazard warning (Line 8): SoA warning: Right hand side contains only AoS expressions: temp
-Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment is all AoS: m1, m2, temp
 ((functions_block ())
  (input_vars
   ((x <opaque>
@@ -15,7 +11,7 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
  (prepare_data
   (((pattern
      (Decl (decl_adtype DataOnly) (decl_id pos__) (decl_type (Sized SInt))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable pos__) ()) UInt
@@ -28,7 +24,7 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
         (SMatrix AoS
          ((pattern (Lit Int 2)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 2)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (NRFunApp (CompilerInternal FnReadData)
@@ -58,7 +54,8 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype AutoDiffable) (decl_id m2)
@@ -80,7 +77,8 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Block
@@ -99,7 +97,7 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
                ((pattern (Lit Int 3))
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))))
-          (initialize Default)))
+          (initialize Default) (decl_annotations ())))
         (meta <opaque>))
        ((pattern
          (Assignment ((LVariable temp) ()) (UTuple (UMatrix UMatrix))
@@ -162,7 +160,8 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype AutoDiffable) (decl_id m2)
@@ -184,7 +183,8 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Block
@@ -203,7 +203,7 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
                ((pattern (Lit Int 3))
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))))
-          (initialize Default)))
+          (initialize Default) (decl_annotations ())))
         (meta <opaque>))
        ((pattern
          (Assignment ((LVariable temp) ()) (UTuple (UMatrix UMatrix))
@@ -266,7 +266,8 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Decl (decl_adtype DataOnly) (decl_id m2)
@@ -288,7 +289,8 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
                 (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
              (mem_pattern AoS)))
            ()))
-         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))))
+         (meta ((type_ UMatrix) (loc <opaque>) (adlevel AutoDiffable))))))
+      (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (NRFunApp
@@ -332,7 +334,7 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
  (transform_inits
   (((pattern
      (Decl (decl_adtype DataOnly) (decl_id pos__) (decl_type (Sized SInt))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable pos__) ()) UInt
@@ -345,7 +347,7 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
         (SMatrix AoS
          ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (NRFunApp (CompilerInternal FnReadData)
@@ -370,7 +372,7 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
         (SMatrix AoS
          ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (NRFunApp (CompilerInternal FnReadData)
@@ -396,7 +398,7 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
         (SMatrix AoS
          ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable m1) ()) UMatrix
@@ -421,7 +423,7 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
         (SMatrix AoS
          ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
          ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly)))))))
-      (initialize Default)))
+      (initialize Default) (decl_annotations ())))
     (meta <opaque>))
    ((pattern
      (Assignment ((LVariable m2) ()) UMatrix
@@ -449,7 +451,7 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
       (SMatrix AoS
        ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block Parameters) (out_trans Identity)))
+     (out_block Parameters) (out_trans Identity) (out_annotations ())))
    (m2 <opaque>
     ((out_unconstrained_st
       (SMatrix AoS
@@ -459,5 +461,10 @@ Optimization hazard warning (Line 8): SoA warning: Right hand side of assignment
       (SMatrix AoS
        ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))
        ((pattern (Lit Int 3)) (meta ((type_ UInt) (loc <opaque>) (adlevel DataOnly))))))
-     (out_block Parameters) (out_trans Identity)))))
+     (out_block Parameters) (out_trans Identity) (out_annotations ())))))
  (prog_name tuple_test2_model) (prog_path ../tuple_test2.stan))
+/*
+../tuple_test2.stan:8:3: warning: Optimization hazard (SoA): Used in a container (tuple, array, row vector) literal: m1, m2
+../tuple_test2.stan:8:3: warning: Optimization hazard (SoA): Right hand side of assignment to 'temp' is all AoS: m1, m2
+../tuple_test2.stan:8:3: warning: Optimization hazard (SoA): The left hand side 'temp' is AoS, so the following values from the right hand side will be demoted: m1, m2
+*/
