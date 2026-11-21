@@ -3,14 +3,14 @@
   "line": {
     "repo": "nsiccha/stanc3",
     "ref": "dogfood",
-    "sha": "76e540acae0652f2b1dbbb7763a98ce1c97f0da7"
+    "sha": "862202e6f557d6a505824506564ec4de9d6a262c"
   },
   "upstream": {
     "repo": "stan-dev/stanc3",
     "ref": "master",
-    "sha": "456130a900c56ddb0505c4540460977106bd9938"
+    "sha": "c0531519338bac9a4d3bf8fabbec366cbc6ef1a9"
   },
-  "prepared_at": "2026-11-18T19:47:05Z",
+  "prepared_at": "2026-11-21T11:36:28Z",
   "problems": [
     {
       "id": "variadic-dde-signatures",
@@ -87,6 +87,16 @@
             "test/integration/good/code-gen/dde/dde_test_model.stan"
           ],
           "detail": "GCC syntax-checked the C++ emitted for this model against Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
+        },
+        {
+          "base": "c0531519338bac9a4d3bf8fabbec366cbc6ef1a9",
+          "native_build": "stanc3 862202e6f557d6a505824506564ec4de9d6a262c, OCaml 5.5.2, Dune 3.23.1",
+          "result": "passed",
+          "tests": [
+            "dune runtest --force",
+            "test/integration/good/code-gen/dde/dde_test_model.stan"
+          ],
+          "detail": "The full compiler suite passed. GCC syntax-checked C++17 generated with --O1 for this model using Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
         }
       ]
     },
@@ -96,7 +106,12 @@
       "title": "Compile Torsten event-schedule calls to pmx_solve_dde_rk45",
       "summary": "Compiler feature for the Torsten event solver. The pmx_solve_dde_rk45 function accepts a dosing schedule, delays and state history. stanc3 checks the selected overload and emits a torsten::pmx_solve_dde_rk45 call.",
       "repairs": [],
-      "upstream_refs": [],
+      "upstream_refs": [
+        {
+          "url": "https://github.com/stan-dev/stanc3/issues/1500",
+          "relation": "related"
+        }
+      ],
       "depends_on": [],
       "fix": {
         "branch": "torsten-dde",
@@ -195,6 +210,16 @@
             "test/integration/good/code-gen/torsten_dde/pmx_dde_test_model.stan"
           ],
           "detail": "GCC syntax-checked the C++ emitted for this model against Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
+        },
+        {
+          "base": "c0531519338bac9a4d3bf8fabbec366cbc6ef1a9",
+          "native_build": "stanc3 862202e6f557d6a505824506564ec4de9d6a262c, OCaml 5.5.2, Dune 3.23.1",
+          "result": "passed",
+          "tests": [
+            "dune runtest --force",
+            "test/integration/good/code-gen/torsten_dde/pmx_dde_test_model.stan"
+          ],
+          "detail": "The full compiler suite passed. GCC syntax-checked C++17 generated with --O1 for this model using Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6. All 850 Torsten signatures matched the release compiler."
         }
       ]
     },
@@ -282,6 +307,16 @@
             "test/integration/good/code-gen/solver_jacobian/solver_jacobian_test_model.stan"
           ],
           "detail": "GCC syntax-checked C++ from this release-based compiler using BridgeStan 2.9.0's Stan headers and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
+        },
+        {
+          "base": "c0531519338bac9a4d3bf8fabbec366cbc6ef1a9",
+          "native_build": "stanc3 862202e6f557d6a505824506564ec4de9d6a262c, OCaml 5.5.2, Dune 3.23.1",
+          "result": "passed",
+          "tests": [
+            "dune runtest --force",
+            "test/integration/good/code-gen/solver_jacobian/solver_jacobian_test_model.stan"
+          ],
+          "detail": "The full compiler suite passed. GCC syntax-checked C++17 generated with --O1 for this model using Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
         }
       ]
     },
@@ -291,7 +326,12 @@
       "title": "Supply an analytic Jacobian to Torsten event solvers",
       "summary": "A Stan model can pass its Jacobian immediately after its right-hand side in pmx_solve_rk45, pmx_solve_bdf, pmx_solve_adams and pmx_solve_dde_rk45. The callback takes the same arguments as the right-hand side, including lagged states for DDEs, and returns a matrix.",
       "repairs": [],
-      "upstream_refs": [],
+      "upstream_refs": [
+        {
+          "url": "https://github.com/stan-dev/stanc3/issues/1500",
+          "relation": "related"
+        }
+      ],
       "depends_on": [
         "torsten-dde-signatures"
       ],
@@ -350,6 +390,16 @@
             "test/integration/good/code-gen/torsten_jacobian/torsten_jacobian_test_model.stan"
           ],
           "detail": "GCC syntax-checked C++ from this release-based compiler using BridgeStan 2.9.0's Stan headers and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6."
+        },
+        {
+          "base": "c0531519338bac9a4d3bf8fabbec366cbc6ef1a9",
+          "native_build": "stanc3 862202e6f557d6a505824506564ec4de9d6a262c, OCaml 5.5.2, Dune 3.23.1",
+          "result": "passed",
+          "tests": [
+            "dune runtest --force",
+            "test/integration/good/code-gen/torsten_jacobian/torsten_jacobian_test_model.stan"
+          ],
+          "detail": "The full compiler suite passed. GCC syntax-checked C++17 generated with --O1 for this model using Stan c59166d1cff8282bb60ae29dcaa69f008f749d4a and Stan Math 4012d968c6059b9c31f88e25eefbdc8173fccdd6. All 850 Torsten signatures matched the release compiler."
         }
       ]
     }
